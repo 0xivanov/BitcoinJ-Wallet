@@ -5,12 +5,16 @@ module com.ivanov.btcwallet {
 
     requires org.controlsfx.controls;
     requires com.dlsc.formsfx;
-    requires validatorfx;
     requires org.kordamp.ikonli.javafx;
     requires org.kordamp.bootstrapfx.core;
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
+    requires org.bitcoinj.core;
+    requires com.google.common;
+    requires jsr305;
 
     opens com.ivanov.btcwallet to javafx.fxml;
     exports com.ivanov.btcwallet;
+    exports com.ivanov.btcwallet.controller;
+    opens com.ivanov.btcwallet.controller to javafx.fxml;
 }
