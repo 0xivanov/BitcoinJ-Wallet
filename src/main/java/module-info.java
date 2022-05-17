@@ -7,11 +7,10 @@ module com.ivanov.btcwallet {
     requires com.dlsc.formsfx;
     requires org.kordamp.ikonli.javafx;
     requires org.kordamp.bootstrapfx.core;
-    requires eu.hansolo.tilesfx;
-    requires com.almasb.fxgl.all;
     requires org.bitcoinj.core;
     requires com.google.common;
     requires jsr305;
+    requires fontawesomefx;
 
     opens com.ivanov.btcwallet to javafx.fxml;
     exports com.ivanov.btcwallet;

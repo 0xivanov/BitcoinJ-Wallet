@@ -55,7 +55,7 @@ public class WalletUtil {
             Futures.addCallback(sendResult.broadcastComplete, new FutureCallback<>() {
                 @Override
                 public void onSuccess(@Nullable Transaction result) {
-                    System.out.println("success");
+                    System.out.println(result.getConfidence());
                 }
 
                 @Override
@@ -65,8 +65,12 @@ public class WalletUtil {
             }, MoreExecutors.directExecutor());
             sendResult.tx.getConfidence().addEventListener((tx, reason) -> {
                 if (reason == TransactionConfidence.Listener.ChangeReason.SEEN_PEERS) {
-                    System.out.println("Seen by peers");
+                    System.out.println(tx.getConfidenceType());
                 }
+                else {
+                    System.out.println(tx.getConfidenceType());
+                }
+
             });
         } catch (InsufficientMoneyException e) {
             e.printStackTrace();
