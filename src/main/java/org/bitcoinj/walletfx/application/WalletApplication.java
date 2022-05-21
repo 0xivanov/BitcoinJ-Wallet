@@ -108,6 +108,7 @@ public abstract class WalletApplication implements AppDelegate {
         }
         controller = loadController();
         primaryStage.setScene(controller.scene());
+        primaryStage.setResizable(false);
         startWalletAppKit(primaryStage);
         controller.scene().getAccelerators().put(KeyCombination.valueOf("Shortcut+F"), () -> walletAppKit().peerGroup().getDownloadPeer().close());
     }

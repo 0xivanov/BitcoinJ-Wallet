@@ -5,6 +5,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.effect.BoxBlur?>
 <?import javafx.scene.effect.ColorAdjust?>
 <?import javafx.scene.image.Image?>
@@ -15,10 +16,10 @@
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
 
-<?import org.bitcoinj.walletfx.controls.*?>
-<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/18" fx:controller="wallettemplate.MainController">
+<?import org.bitcoinj.walletfx.controls.ClickableBitcoinAddress?>
+<TabPane minHeight="200.0" minWidth="300.0" prefHeight="451.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="wallettemplate.MainController">
   <tabs>
-    <Tab text="Untitled Tab 1">
+    <Tab text="Bitcoin Network">
          <content>
             <AnchorPane maxHeight="Infinity" maxWidth="Infinity" minHeight="200.0" minWidth="300.0" prefHeight="451.0" prefWidth="800.0" styleClass="root-pane">
                <children>
@@ -29,15 +30,12 @@
                   </Label>
                   <HBox alignment="CENTER_LEFT" prefHeight="30.0" prefWidth="305.0" AnchorPane.leftAnchor="143.0" AnchorPane.rightAnchor="152.0" AnchorPane.topAnchor="14.0">
                      <children>
-                        <Label fx:id="balance" text="0.00" underline="false">
+                        <Label fx:id="balance" text="0.00" textFill="GOLD" underline="false">
                            <font>
                               <Font size="25.0" />
                            </font>
-                           <textFill>
-                              <Color red="0.750" green="0.750" blue="0.750" fx:id="x2" />
-                           </textFill>
                         </Label>
-                        <Label font="$x1" text="BTC" textFill="$x2" />
+                        <Label font="$x1" text="BTC" />
                      </children>
                   </HBox>
                   <HBox fx:id="controlsBox" alignment="TOP_LEFT" fillHeight="true" layoutX="14.0" layoutY="347.0" minHeight="16.0" prefHeight="36.0" prefWidth="243.0" spacing="10.0" translateY="60.0" visible="true" AnchorPane.bottomAnchor="17.0">
@@ -59,22 +57,19 @@
                      </image>
                   </ImageView>
                   <ClickableBitcoinAddress fx:id="addressControl" layoutY="45.0" prefHeight="21.0" prefWidth="391.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="195.0" />
-                  <StackPane layoutX="14.0" layoutY="81.0" prefHeight="249.0" prefWidth="572.0" style="-fx-border-color: lightgrey; -fx-border-style: dashed" AnchorPane.bottomAnchor="70.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="81.0">
-                     <children>
-                        <Label text="Your content goes here" />
-                     </children>
-                  </StackPane>
                   <HBox spacing="20" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="17.0">
                      <children>
-                        <Button onAction="#settingsClicked" style="-fx-base: white;" styleClass="fat-button" text="Settings" />
-                        <Button id="sendMoneyOut" fx:id="sendMoneyOutBtn" alignment="CENTER" mnemonicParsing="false" onAction="#sendMoneyOut" style="-fx-base: lightgreen; -fx-font-weight: bold" styleClass="fat-button" text="Send money out" />
+                        <Button alignment="CENTER" cancelButton="true" mnemonicParsing="false" onAction="#settingsClicked" styleClass="fat-button" text="Settings" />
+                        <Button fx:id="sendMoneyOutBtn" alignment="CENTER" mnemonicParsing="false" onAction="#sendMoneyOut" style="-fx-base: lightgreen; -fx-font-weight: bold" styleClass="fat-button" text="Send money out" />
+                        <Button fx:id="requestMoneyBtn" alignment="CENTER" mnemonicParsing="false" onAction="#requestMoney" style="-fx-base: gold; -fx-font-weight: bold" styleClass="fat-button" text="Request money" />
                      </children>
                   </HBox>
+                  <TextField fx:id="btcToRequest" layoutX="676.0" layoutY="70.0" prefHeight="25.0" prefWidth="110.0" promptText="btc" />
                </children>
             </AnchorPane>
          </content>
     </Tab>
-    <Tab text="Untitled Tab 2">
+    <Tab text="Lightning Network">
          <content>
             <AnchorPane maxHeight="Infinity" maxWidth="Infinity" minHeight="200.0" minWidth="300.0" prefHeight="451.0" prefWidth="800.0" styleClass="root-pane">
                <children>
@@ -126,6 +121,7 @@
                         <Button id="sendMoneyOut" fx:id="sendMoneyOutBtn1" alignment="CENTER" mnemonicParsing="false" onAction="#sendMoneyOut" style="-fx-base: lightgreen; -fx-font-weight: bold" styleClass="fat-button" text="Send money out" />
                      </children>
                   </HBox>
+                  <TextField layoutX="676.0" layoutY="70.0" prefHeight="25.0" prefWidth="110.0" promptText="sats" />
                </children>
             </AnchorPane>
          </content>

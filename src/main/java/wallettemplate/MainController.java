@@ -21,8 +21,9 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Scene;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCombination;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.*;
 import org.bitcoinj.core.listeners.DownloadProgressTracker;
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.utils.MonetaryFormat;
@@ -32,17 +33,21 @@ import javafx.animation.TranslateTransition;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.HBox;
 import javafx.util.Duration;
 import org.bitcoinj.walletfx.application.MainWindowController;
 import org.bitcoinj.walletfx.application.WalletApplication;
-import org.bitcoinj.walletfx.utils.GuiUtils;
-import org.bitcoinj.walletfx.utils.TextFieldValidator;
+import org.bitcoinj.walletfx.utils.*;
 import org.bitcoinj.walletfx.controls.ClickableBitcoinAddress;
 import org.bitcoinj.walletfx.controls.NotificationBarPane;
-import org.bitcoinj.walletfx.utils.BitcoinUIModel;
 import org.bitcoinj.walletfx.utils.easing.EasingMode;
 import org.bitcoinj.walletfx.utils.easing.ElasticInterpolator;
+
+import java.awt.*;
+import java.io.IOException;
+import java.net.URI;
+
+import static com.google.common.base.Preconditions.checkPositionIndex;
+import static com.google.common.base.Preconditions.checkState;
 
 /**
  * Gets created auto-magically by FXMLLoader via reflection. The widget fields are set to the GUI controls they're named
@@ -52,11 +57,15 @@ public class MainController extends MainWindowController {
     public HBox controlsBox;
     public Label balance;
     public Button sendMoneyOutBtn;
+    public Button requestMoneyBtn;
+    public TextField btcToRequest;
     public ClickableBitcoinAddress addressControl;
 
     private final BitcoinUIModel model = new BitcoinUIModel();
     private NotificationBarPane.Item syncItem;
     private static final MonetaryFormat MONETARY_FORMAT = MonetaryFormat.BTC.noCode();
+
+    protected String uri;
 
     private WalletApplication app;
     private NotificationBarPane notificationBar;
@@ -66,11 +75,14 @@ public class MainController extends MainWindowController {
         app = WalletApplication.instance();
         scene = new Scene(uiStack);
         TextFieldValidator.configureScene(scene);
+        new TextFieldValidator(btcToRequest, amount -> testAmountToRequest(amount));
+        btcToRequest.textProperty().addListener((observableValue, prev, current) -> checkButton(current));
         // Special case of initOverlay that passes null as the 2nd parameter because ClickableBitcoinAddress is loaded by FXML
         // TODO: Extract QRCode Pane to separate reusable class that is a more standard OverlayController instance
         addressControl.initOverlay(this, null);
         addressControl.setAppName(app.applicationName());
         addressControl.setOpacity(0.0);
+        requestMoneyBtn.setDisable(true);
     }
 
     @Override
@@ -126,6 +138,18 @@ public class MainController extends MainWindowController {
         overlayUI("send_money.fxml");
     }
 
+    public void requestMoney(ActionEvent event) {
+        Coin amountToRequest = Coin.parseCoin(btcToRequest.getText());
+        this.uri = addressControl.uri(amountToRequest);
+        try {
+            Desktop.getDesktop().browse(URI.create(this.uri));
+        } catch (IOException e) {
+            GuiUtils.informationalAlert("Opening wallet app failed", "Perhaps you don't have one installed?");
+        }
+        this.
+        overlayUI("request_uri.fxml");
+    }
+
     public void settingsClicked(ActionEvent event) {
         OverlayUI<WalletSettingsController> screen = overlayUI("wallet_settings.fxml");
         screen.controller.initialize(null);
@@ -163,6 +187,14 @@ public class MainController extends MainWindowController {
     @Override
     public DownloadProgressTracker progressBarUpdater() {
         return model.getDownloadProgressTracker();
+    }
+
+    private void checkButton(String current) {
+        boolean value = testAmountToRequest(current);
+        requestMoneyBtn.setDisable(!value);
+    }
+    private boolean testAmountToRequest(String amount) {
+        return amount.isEmpty() || !WTUtils.didThrow(() -> checkState(Coin.parseCoin(amount).value > 0));
     }
 
 }

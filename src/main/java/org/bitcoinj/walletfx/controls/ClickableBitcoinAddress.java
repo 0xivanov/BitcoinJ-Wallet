@@ -37,12 +37,17 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import org.bitcoinj.core.Address;
+import org.bitcoinj.core.Coin;
 import org.bitcoinj.uri.BitcoinURI;
 import org.bitcoinj.walletfx.overlay.OverlayController;
 import org.bitcoinj.walletfx.overlay.OverlayableStackPaneController;
+import org.bitcoinj.walletfx.utils.GuiUtils;
 import org.bitcoinj.walletfx.utils.QRCodeImages;
 
+import javax.annotation.Nullable;
+import java.awt.*;
 import java.io.IOException;
+import java.net.URI;
 
 import static javafx.beans.binding.Bindings.convert;
 
@@ -99,8 +104,8 @@ public class ClickableBitcoinAddress extends AnchorPane implements OverlayContro
         }
     }
 
-    public String uri() {
-        return BitcoinURI.convertToBitcoinURI(address.get(), null, appName, null);
+    public String uri(@Nullable Coin amount) {
+        return BitcoinURI.convertToBitcoinURI(address.get(), amount, appName, null);
     }
 
     public Address getAddress() {
@@ -121,7 +126,7 @@ public class ClickableBitcoinAddress extends AnchorPane implements OverlayContro
         Clipboard clipboard = Clipboard.getSystemClipboard();
         ClipboardContent content = new ClipboardContent();
         content.putString(addressStr.get());
-        content.putHtml(String.format("<a href='%s'>%s</a>", uri(), addressStr.get()));
+        content.putHtml(String.format("<a href='%s'>%s</a>", uri(null), addressStr.get()));
         clipboard.setContent(content);
     }
 
@@ -131,12 +136,7 @@ public class ClickableBitcoinAddress extends AnchorPane implements OverlayContro
             // User right clicked or the Mac equivalent. Show the context menu.
             addressMenu.show(addressLabel, event.getScreenX(), event.getScreenY());
         } else {
-            // User left clicked.
-//            try {
-//                Desktop.getDesktop().browse(URI.create(uri()));
-//            } catch (IOException e) {
-//                GuiUtils.informationalAlert("Opening wallet app failed", "Perhaps you don't have one installed?");
-//            }
+
         }
     }
 
@@ -147,7 +147,7 @@ public class ClickableBitcoinAddress extends AnchorPane implements OverlayContro
 
     @FXML
     protected void showQRCode(MouseEvent event) {
-        Image qrImage = QRCodeImages.imageFromString(uri(), 320, 240);
+        Image qrImage = QRCodeImages.imageFromString(uri(null), 320, 240);
         ImageView view = new ImageView(qrImage);
         view.setEffect(new DropShadow());
         // Embed the image in a pane to ensure the drop-shadow interacts with the fade nicely, otherwise it looks weird.

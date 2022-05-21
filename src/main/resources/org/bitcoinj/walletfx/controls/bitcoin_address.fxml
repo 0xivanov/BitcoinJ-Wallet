@@ -13,7 +13,7 @@
   <children>
     <HBox id="addressLabelBox" fx:id="box" alignment="CENTER_LEFT" layoutX="0.0" layoutY="0.0" prefHeight="21.0" prefWidth="391.0" spacing="10.0">
       <children>
-        <Label fx:id="addressLabel" onMouseClicked="#requestMoney" style="-fx-cursor: hand" text="&lt;address goes here&gt;" textFill="BLUE" underline="true">
+        <Label fx:id="addressLabel" onMouseClicked="#requestMoney" style="-fx-cursor: hand">
           <contextMenu>
             <ContextMenu fx:id="addressMenu">
               <items>

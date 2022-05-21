@@ -104,8 +104,8 @@ public abstract class OverlayableStackPaneController {
                 fadeOutAndRemove(uiStack, currentOverlay.ui);
                 uiStack.getChildren().add(ui);
                 ui.setOpacity(0.0);
-                fadeIn(ui, 100);
-                zoomIn(ui, 100);
+                fadeIn(ui, 20);
+                zoomIn(ui, 20);
             }
             currentOverlay = this;
         }
