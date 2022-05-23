@@ -26,6 +26,7 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.*;
 import org.bitcoinj.core.listeners.DownloadProgressTracker;
 import org.bitcoinj.core.Coin;
+import org.bitcoinj.script.Script;
 import org.bitcoinj.utils.MonetaryFormat;
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
@@ -54,7 +55,6 @@ import static com.google.common.base.Preconditions.checkState;
  * after. This class handles all the updates and event handling for the main UI.
  */
 public class MainController extends MainWindowController {
-    public HBox controlsBox;
     public Label balance;
     public Button sendMoneyOutBtn;
     public Button requestMoneyBtn;
@@ -139,6 +139,7 @@ public class MainController extends MainWindowController {
     }
 
     public void requestMoney(ActionEvent event) {
+        app.walletAppKit().wallet().freshReceiveAddress(Script.ScriptType.P2WPKH);
         Coin amountToRequest = Coin.parseCoin(btcToRequest.getText());
         this.uri = addressControl.uri(amountToRequest);
         try {
@@ -155,30 +156,22 @@ public class MainController extends MainWindowController {
         screen.controller.initialize(null);
     }
 
-    public void primaryClicked(ActionEvent event) {
-        GuiUtils.informationalAlert("Unused button #1", "You can hook this up in your app");
-    }
-
-    public void secondaryClicked(ActionEvent event) {
-        GuiUtils.informationalAlert("Unused button #2", "You can hook this up in your app");
-    }
-
     @Override
     public void restoreFromSeedAnimation() {
         // Buttons slide out ...
-        TranslateTransition leave = new TranslateTransition(Duration.millis(1200), controlsBox);
+        TranslateTransition leave = new TranslateTransition(Duration.millis(1200));
         leave.setByY(80.0);
         leave.play();
     }
 
     public void readyToGoAnimation() {
         // Buttons slide in and clickable address appears simultaneously.
-        TranslateTransition arrive = new TranslateTransition(Duration.millis(1200), controlsBox);
-        arrive.setInterpolator(new ElasticInterpolator(EasingMode.EASE_OUT, 1, 2));
-        arrive.setToY(0.0);
+        //TranslateTransition arrive = new TranslateTransition(Duration.millis(1200));
+        //arrive.setInterpolator(new ElasticInterpolator(EasingMode.EASE_OUT, 1, 2));
+        //arrive.setToY(0.0);
         FadeTransition reveal = new FadeTransition(Duration.millis(1200), addressControl);
         reveal.setToValue(1.0);
-        ParallelTransition group = new ParallelTransition(arrive, reveal);
+        ParallelTransition group = new ParallelTransition(reveal);
         group.setDelay(NotificationBarPane.ANIM_OUT_DURATION);
         group.setCycleCount(1);
         group.play();
