@@ -18,6 +18,7 @@ package org.bitcoinj.walletfx.utils;
 
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Coin;
+import org.bitcoinj.core.Transaction;
 import org.bitcoinj.core.listeners.DownloadProgressTracker;
 import org.bitcoinj.wallet.Wallet;
 import javafx.application.Platform;
@@ -27,6 +28,7 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * A class that exposes relevant bitcoin stuff as JavaFX bindable properties.
@@ -35,6 +37,7 @@ public class BitcoinUIModel {
     private SimpleObjectProperty<Address> address = new SimpleObjectProperty<>();
     private SimpleObjectProperty<Coin> balance = new SimpleObjectProperty<>(Coin.ZERO);
     private SimpleObjectProperty<Coin> pending = new SimpleObjectProperty<>(Coin.ZERO);
+    private SimpleObjectProperty<List<Transaction>> recentTransactions = new SimpleObjectProperty<>();
     private SimpleDoubleProperty syncProgress = new SimpleDoubleProperty(-1);
 
     private ProgressBarUpdater syncProgressUpdater = new ProgressBarUpdater();
@@ -47,11 +50,16 @@ public class BitcoinUIModel {
     }
 
     public final void setWallet(Wallet wallet) {
-        wallet.addCoinsReceivedEventListener(Platform::runLater, (wallet1, transaction, coin, coin1) -> updateBalance(wallet1));
+        wallet.addCoinsReceivedEventListener(Platform::runLater, (w, transaction, coin, coin1) -> updateBalance(w));
         wallet.addChangeEventListener(Platform::runLater, w -> updateBalance(w));
         wallet.addCurrentKeyChangeEventListener(Platform::runLater, () -> updateAddress(wallet));
         updateBalance(wallet);
         updateAddress(wallet);
+        updateRecentTransactions(wallet);
+    }
+
+    private void updateRecentTransactions(Wallet wallet) {
+        recentTransactions.set(wallet.getRecentTransactions(5, true));
     }
 
     private void updateBalance(Wallet wallet) {
@@ -90,5 +98,8 @@ public class BitcoinUIModel {
     }
     public SimpleObjectProperty<Coin> pendingProperty() {
         return pending;
+    }
+    public SimpleObjectProperty<List<Transaction>> recentTransactionsProperty() {
+        return recentTransactions;
     }
 }

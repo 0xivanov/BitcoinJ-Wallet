@@ -24,30 +24,20 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.uri.BitcoinURI;
 import org.bitcoinj.walletfx.overlay.OverlayController;
 import org.bitcoinj.walletfx.overlay.OverlayableStackPaneController;
-import org.bitcoinj.walletfx.utils.GuiUtils;
-import org.bitcoinj.walletfx.utils.QRCodeImages;
 
 import javax.annotation.Nullable;
-import java.awt.*;
 import java.io.IOException;
-import java.net.URI;
 
 import static javafx.beans.binding.Bindings.convert;
 
@@ -58,20 +48,18 @@ import static javafx.beans.binding.Bindings.convert;
  */
 public class ClickableBitcoinAddress extends AnchorPane implements OverlayController<ClickableBitcoinAddress> {
     @FXML protected Label addressLabel;
-    @FXML protected ContextMenu addressMenu;
     @FXML protected Label copyWidget;
-    @FXML protected Label qrCode;
 
     protected SimpleObjectProperty<Address> address = new SimpleObjectProperty<>();
     private final StringExpression addressStr;
 
-    private OverlayableStackPaneController rootController;
+    //private OverlayableStackPaneController rootController;
 
     private String appName = "app-name";
 
     @Override
     public void initOverlay(OverlayableStackPaneController overlayableStackPaneController, OverlayableStackPaneController.OverlayUI<? extends OverlayController<ClickableBitcoinAddress>> ui) {
-        rootController = overlayableStackPaneController;
+        //rootController = overlayableStackPaneController;
     }
 
     /**
@@ -94,9 +82,6 @@ public class ClickableBitcoinAddress extends AnchorPane implements OverlayContro
             AwesomeDude.setIcon(copyWidget, AwesomeIcon.COPY);
             Tooltip.install(copyWidget, new Tooltip("Copy address to clipboard"));
 
-            AwesomeDude.setIcon(qrCode, AwesomeIcon.QRCODE);
-            Tooltip.install(qrCode, new Tooltip("Show a barcode scannable with a mobile phone for this address"));
-
             addressStr = convert(address);
             addressLabel.textProperty().bind(addressStr);
         } catch (IOException e) {
@@ -106,14 +91,6 @@ public class ClickableBitcoinAddress extends AnchorPane implements OverlayContro
 
     public String uri(@Nullable Coin amount) {
         return BitcoinURI.convertToBitcoinURI(address.get(), amount, appName, null);
-    }
-
-    public Address getAddress() {
-        return address.get();
-    }
-
-    public void setAddress(Address address) {
-        this.address.set(address);
     }
 
     public ObjectProperty<Address> addressProperty() {
@@ -130,33 +107,10 @@ public class ClickableBitcoinAddress extends AnchorPane implements OverlayContro
         clipboard.setContent(content);
     }
 
-    @FXML
-    protected void requestMoney(MouseEvent event) {
-        if (event.getButton() == MouseButton.SECONDARY || (event.getButton() == MouseButton.PRIMARY && event.isMetaDown())) {
-            // User right clicked or the Mac equivalent. Show the context menu.
-            addressMenu.show(addressLabel, event.getScreenX(), event.getScreenY());
-        } else {
-
-        }
-    }
 
     @FXML
     protected void copyWidgetClicked(MouseEvent event) {
         copyAddress(null);
-    }
-
-    @FXML
-    protected void showQRCode(MouseEvent event) {
-        Image qrImage = QRCodeImages.imageFromString(uri(null), 320, 240);
-        ImageView view = new ImageView(qrImage);
-        view.setEffect(new DropShadow());
-        // Embed the image in a pane to ensure the drop-shadow interacts with the fade nicely, otherwise it looks weird.
-        // Then fix the width/height to stop it expanding to fill the parent, which would result in the image being
-        // non-centered on the screen. Finally fade/blur it in.
-        Pane pane = new Pane(view);
-        pane.setMaxSize(qrImage.getWidth(), qrImage.getHeight());
-        final OverlayableStackPaneController.OverlayUI<ClickableBitcoinAddress> overlay = rootController.overlayUI(pane, this);
-        view.setOnMouseClicked(event1 -> overlay.done());
     }
 
 }

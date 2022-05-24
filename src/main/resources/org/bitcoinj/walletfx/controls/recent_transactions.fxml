@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Font?>
+<fx:root type="javafx.scene.layout.AnchorPane" prefWidth="441.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+    <VBox fx:id="transactions" spacing="20.0" style="-fx-background-color: white;">
+    <children>
+        <HBox alignment="CENTER_LEFT" prefHeight="45.0" prefWidth="317.0">
+            <children>
+                <Label text="Recent transactions:">
+                    <font>
+                        <Font size="20.0" fx:id="x123" />
+                    </font>
+                    <padding>
+                        <Insets right="10.0" />
+                    </padding>
+                </Label>
+            </children>
+        </HBox>
+    </children>
+    </VBox>
+</fx:root>

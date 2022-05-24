@@ -33,8 +33,6 @@ public class RequestUriController implements OverlayController<RequestUriControl
     }
 
     public void initialize() {
-        System.out.println("sdf");
-
     }
 
     @FXML

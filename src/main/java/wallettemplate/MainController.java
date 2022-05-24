@@ -37,6 +37,7 @@ import javafx.scene.control.Label;
 import javafx.util.Duration;
 import org.bitcoinj.walletfx.application.MainWindowController;
 import org.bitcoinj.walletfx.application.WalletApplication;
+import org.bitcoinj.walletfx.controls.RecentTransactions;
 import org.bitcoinj.walletfx.utils.*;
 import org.bitcoinj.walletfx.controls.ClickableBitcoinAddress;
 import org.bitcoinj.walletfx.controls.NotificationBarPane;
@@ -61,13 +62,12 @@ public class MainController extends MainWindowController {
     public Button requestMoneyBtn;
     public TextField btcToRequest;
     public ClickableBitcoinAddress addressControl;
+    public RecentTransactions recentTransactions;
 
     private final BitcoinUIModel model = new BitcoinUIModel();
     private NotificationBarPane.Item syncItem;
     private static final MonetaryFormat MONETARY_FORMAT = MonetaryFormat.BTC.noCode();
-
     protected String uri;
-
     private WalletApplication app;
     private NotificationBarPane notificationBar;
 
@@ -111,10 +111,12 @@ public class MainController extends MainWindowController {
         pending.textProperty().bind(createBalanceStringBinding(model.pendingProperty()));
         // Don't let the user click send money when the wallet is empty.
         sendMoneyOutBtn.disableProperty().bind(model.balanceProperty().isEqualTo(Coin.ZERO));
+        recentTransactions.recentTransactionsProperty().bind(model.recentTransactionsProperty());
 
         showBitcoinSyncMessage();
         model.syncProgressProperty().addListener(x -> {
             if (model.syncProgressProperty().get() >= 1.0) {
+                recentTransactions.initOverlay(this, null);
                 readyToGoAnimation();
                 if (syncItem != null) {
                     syncItem.cancel();
