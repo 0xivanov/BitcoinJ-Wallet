@@ -64,7 +64,7 @@
                               <Insets right="16.0" />
                            </padding>
                         </Label>
-                        <Label fx:id="balance2" text="0.00" textFill="#bfbfbf" underline="false">
+                        <Label fx:id="pending" text="0.00" textFill="#bfbfbf" underline="false">
                            <font>
                               <Font size="18.0" />
                            </font>

@@ -34,7 +34,9 @@ import java.util.Date;
 public class BitcoinUIModel {
     private SimpleObjectProperty<Address> address = new SimpleObjectProperty<>();
     private SimpleObjectProperty<Coin> balance = new SimpleObjectProperty<>(Coin.ZERO);
+    private SimpleObjectProperty<Coin> pending = new SimpleObjectProperty<>(Coin.ZERO);
     private SimpleDoubleProperty syncProgress = new SimpleDoubleProperty(-1);
+
     private ProgressBarUpdater syncProgressUpdater = new ProgressBarUpdater();
 
     public BitcoinUIModel() {
@@ -45,7 +47,8 @@ public class BitcoinUIModel {
     }
 
     public final void setWallet(Wallet wallet) {
-        wallet.addChangeEventListener(Platform::runLater, w -> updateBalance(wallet));
+        wallet.addCoinsReceivedEventListener(Platform::runLater, (wallet1, transaction, coin, coin1) -> updateBalance(wallet1));
+        wallet.addChangeEventListener(Platform::runLater, w -> updateBalance(w));
         wallet.addCurrentKeyChangeEventListener(Platform::runLater, () -> updateAddress(wallet));
         updateBalance(wallet);
         updateAddress(wallet);
@@ -53,6 +56,7 @@ public class BitcoinUIModel {
 
     private void updateBalance(Wallet wallet) {
         balance.set(wallet.getBalance());
+        pending.set(wallet.getBalance(Wallet.BalanceType.ESTIMATED).subtract(wallet.getBalance()));
     }
 
     private void updateAddress(Wallet wallet) {
@@ -83,5 +87,8 @@ public class BitcoinUIModel {
 
     public ReadOnlyObjectProperty<Coin> balanceProperty() {
         return balance;
+    }
+    public SimpleObjectProperty<Coin> pendingProperty() {
+        return pending;
     }
 }

@@ -56,6 +56,7 @@ import static com.google.common.base.Preconditions.checkState;
  */
 public class MainController extends MainWindowController {
     public Label balance;
+    public Label pending;
     public Button sendMoneyOutBtn;
     public Button requestMoneyBtn;
     public TextField btcToRequest;
@@ -75,8 +76,11 @@ public class MainController extends MainWindowController {
         app = WalletApplication.instance();
         scene = new Scene(uiStack);
         TextFieldValidator.configureScene(scene);
-        new TextFieldValidator(btcToRequest, amount -> testAmountToRequest(amount));
-        btcToRequest.textProperty().addListener((observableValue, prev, current) -> checkButton(current));
+        new TextFieldValidator(btcToRequest, amount -> {
+            checkButton(amount);
+            return testAmountToRequest(amount);
+        });
+        //btcToRequest.textProperty().addListener((observableValue, prev, current) -> checkButton(current));
         // Special case of initOverlay that passes null as the 2nd parameter because ClickableBitcoinAddress is loaded by FXML
         // TODO: Extract QRCode Pane to separate reusable class that is a more standard OverlayController instance
         addressControl.initOverlay(this, null);
@@ -104,6 +108,7 @@ public class MainController extends MainWindowController {
         model.setWallet(app.walletAppKit().wallet());
         addressControl.addressProperty().bind(model.addressProperty());
         balance.textProperty().bind(createBalanceStringBinding(model.balanceProperty()));
+        pending.textProperty().bind(createBalanceStringBinding(model.pendingProperty()));
         // Don't let the user click send money when the wallet is empty.
         sendMoneyOutBtn.disableProperty().bind(model.balanceProperty().isEqualTo(Coin.ZERO));
 
@@ -184,6 +189,7 @@ public class MainController extends MainWindowController {
 
     private void checkButton(String current) {
         boolean value = testAmountToRequest(current);
+        if(current.isEmpty()) value = false;
         requestMoneyBtn.setDisable(!value);
     }
     private boolean testAmountToRequest(String amount) {
