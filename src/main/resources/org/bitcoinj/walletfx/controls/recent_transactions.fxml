@@ -1,28 +1,149 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.text.Font?>
-<fx:root type="javafx.scene.layout.AnchorPane" prefWidth="441.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
-    <VBox fx:id="transactions" spacing="20.0" style="-fx-background-color: white;">
-    <children>
-        <HBox alignment="CENTER_LEFT" prefHeight="45.0" prefWidth="317.0">
-            <children>
-                <Label text="Recent transactions:">
-                    <font>
-                        <Font size="20.0" fx:id="x123" />
-                    </font>
-                    <padding>
-                        <Insets right="10.0" />
-                    </padding>
-                </Label>
-            </children>
-        </HBox>
-    </children>
+<?import javafx.scene.text.*?>
+<fx:root type="javafx.scene.layout.AnchorPane" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+    <VBox prefHeight="343.0" prefWidth="423.0" spacing="15.0">
+        <children>
+            <Label text="Recent Transactions:">
+                <font>
+                    <Font size="20.0" />
+                </font>
+            </Label>
+            <HBox fx:id="transaction1" prefHeight="59.0" prefWidth="383.0" spacing="10.0">
+                <children>
+                    <ImageView fx:id="image1" fitHeight="45.0" fitWidth="71.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@../images/outgoing.png" />
+                        </image>
+                    </ImageView>
+                    <VBox prefHeight="59.0" prefWidth="180.0">
+                        <children>
+                            <Label prefHeight="29.0" prefWidth="169.0" text="Date">
+                                <font>
+                                    <Font size="14.0" />
+                                </font>
+                            </Label>
+                            <Label prefHeight="29.0" prefWidth="139.0" text="walletname">
+                                <font>
+                                    <Font size="14.0" />
+                                </font>
+                            </Label>
+                        </children>
+                    </VBox>
+                    <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" prefHeight="29.0" prefWidth="111.0" text="amount">
+                        <font>
+                            <Font size="14.0" />
+                        </font>
+                    </Label>
+                    <Label alignment="CENTER_LEFT" contentDisplay="RIGHT" prefHeight="29.0" prefWidth="30.0" text="BTC">
+                        <font>
+                            <Font size="14.0" />
+                        </font>
+                    </Label>
+                </children>
+            </HBox>
+            <HBox fx:id="transaction2" prefHeight="59.0" prefWidth="383.0" spacing="10.0">
+                <children>
+                    <ImageView fitHeight="45.0" fitWidth="71.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@../images/outgoing.png" />
+                        </image>
+                    </ImageView>
+                    <VBox prefHeight="59.0" prefWidth="180.0">
+                        <children>
+                            <Label prefHeight="29.0" prefWidth="169.0" text="Date">
+                                <font>
+                                    <Font size="14.0" />
+                                </font>
+                            </Label>
+                            <Label prefHeight="29.0" prefWidth="139.0" text="walletname">
+                                <font>
+                                    <Font size="14.0" />
+                                </font>
+                            </Label>
+                        </children>
+                    </VBox>
+                    <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" prefHeight="29.0" prefWidth="111.0" text="amount">
+                        <font>
+                            <Font size="14.0" />
+                        </font>
+                    </Label>
+                    <Label alignment="CENTER_LEFT" contentDisplay="RIGHT" prefHeight="29.0" prefWidth="30.0" text="BTC">
+                        <font>
+                            <Font size="14.0" />
+                        </font>
+                    </Label>
+                </children>
+            </HBox>
+            <HBox fx:id="transaction3" prefHeight="59.0" prefWidth="383.0" spacing="10.0">
+                <children>
+                    <ImageView fitHeight="45.0" fitWidth="71.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@../images/outgoing.png" />
+                        </image>
+                    </ImageView>
+                    <VBox prefHeight="59.0" prefWidth="180.0">
+                        <children>
+                            <Label prefHeight="29.0" prefWidth="169.0" text="Date">
+                                <font>
+                                    <Font size="14.0" />
+                                </font>
+                            </Label>
+                            <Label prefHeight="29.0" prefWidth="139.0" text="walletname">
+                                <font>
+                                    <Font size="14.0" />
+                                </font>
+                            </Label>
+                        </children>
+                    </VBox>
+                    <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" prefHeight="29.0" prefWidth="111.0" text="amount">
+                        <font>
+                            <Font size="14.0" />
+                        </font>
+                    </Label>
+                    <Label alignment="CENTER_LEFT" contentDisplay="RIGHT" prefHeight="29.0" prefWidth="30.0" text="BTC">
+                        <font>
+                            <Font size="14.0" />
+                        </font>
+                    </Label>
+                </children>
+            </HBox>
+            <HBox fx:id="transaction4" prefHeight="59.0" prefWidth="383.0" spacing="10.0">
+                <children>
+                    <ImageView fitHeight="45.0" fitWidth="71.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@../images/outgoing.png" />
+                        </image>
+                    </ImageView>
+                    <VBox prefHeight="59.0" prefWidth="180.0">
+                        <children>
+                            <Label prefHeight="29.0" prefWidth="169.0" text="Date">
+                                <font>
+                                    <Font size="14.0" />
+                                </font>
+                            </Label>
+                            <Label prefHeight="29.0" prefWidth="139.0" text="walletname">
+                                <font>
+                                    <Font size="14.0" />
+                                </font>
+                            </Label>
+                        </children>
+                    </VBox>
+                    <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" prefHeight="29.0" prefWidth="111.0" text="amount">
+                        <font>
+                            <Font size="14.0" />
+                        </font>
+                    </Label>
+                    <Label alignment="CENTER_LEFT" contentDisplay="RIGHT" prefHeight="29.0" prefWidth="30.0" text="BTC">
+                        <font>
+                            <Font size="14.0" />
+                        </font>
+                    </Label>
+                </children>
+            </HBox>
+        </children>
     </VBox>
 </fx:root>
