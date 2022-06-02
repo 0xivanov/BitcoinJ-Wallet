@@ -23,8 +23,6 @@ public class RecentTransactions extends AnchorPane implements OverlayController<
     private SimpleObjectProperty<List<Transaction>> recentTransactions = new SimpleObjectProperty<>();
     private WalletApplication app;
 
-    //private Image incoming = new Image("/org/bitcoinj/walletfx/images/incoming.png");
-
 
     @FXML
     protected HBox transaction1;
@@ -58,16 +56,10 @@ public class RecentTransactions extends AnchorPane implements OverlayController<
     }
 
     public void updateTransactions() {
-        recentTransactions.get().forEach(transaction -> {
-            Coin value = transaction.getValue(app.walletAppKit().wallet());
-            String date = transaction.getUpdateTime().toLocaleString();
-            //transactions.getChildren().add(createTransactionRow(value, date));
-        });
-
-        Transaction tr1 = recentTransactions.get().get(0);
-        Transaction tr2 = recentTransactions.get().get(1);
-        Transaction tr3 = recentTransactions.get().get(2);
-        Transaction tr4 = recentTransactions.get().get(3);
+        Transaction tr1 = recentTransactions.get().size() >= 1 ? recentTransactions.get().get(0) : null;
+        Transaction tr2 = recentTransactions.get().size() >= 2 ? recentTransactions.get().get(1) : null;
+        Transaction tr3 = recentTransactions.get().size() >= 3 ? recentTransactions.get().get(2) : null;
+        Transaction tr4 = recentTransactions.get().size() >= 4 ? recentTransactions.get().get(3) : null;
         setTransactionUI(tr1, transaction1);
         setTransactionUI(tr2, transaction2);
         setTransactionUI(tr3, transaction3);
@@ -75,6 +67,7 @@ public class RecentTransactions extends AnchorPane implements OverlayController<
     }
 
     private void setTransactionUI(Transaction tr, HBox hBox) {
+        hBox.setVisible(true);
         if(tr == null) {
             hBox.setVisible(false);
             return;
@@ -98,24 +91,6 @@ public class RecentTransactions extends AnchorPane implements OverlayController<
             image.setImage(new Image("/org/bitcoinj/walletfx/images/outgoing.png"));
             amount.setStyle("-fx-text-fill: red;-fx-font-size: 13pt;");
         }
-    }
-
-    private HBox createTransactionRow(Coin value, String date) {
-        Label valueLabel = new Label(value.toBtc().toString());
-        if (value.isLessThan(Coin.ZERO)) {
-            valueLabel.setStyle("-fx-text-fill: red;-fx-font-size: 13pt;");
-        } else {
-            valueLabel.setStyle("-fx-text-fill: #bfbfbf;-fx-font-size: 13pt;");
-        }
-        Label dateLabel = new Label(date);
-        dateLabel.setStyle("-fx-font-size: 11pt;");
-        HBox hBox = new HBox();
-        //hBox.getChildren().add(incoming);
-        hBox.getChildren().add(dateLabel);
-        hBox.getChildren().add(valueLabel);
-        hBox.setSpacing(10.0);
-
-        return hBox;
     }
 
     public SimpleObjectProperty<List<Transaction>> recentTransactionsProperty() {

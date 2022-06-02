@@ -71,7 +71,7 @@ public class SendMoneyController implements OverlayController<SendMoneyControlle
         new BitcoinAddressValidator(app.params(), address, sendBtn);
         new TextFieldValidator(amountEdit, text ->
                 !WTUtils.didThrow(() -> checkState(Coin.parseCoin(text).compareTo(balance) <= 0)));
-        amountEdit.setText(balance.toPlainString());
+        amountEdit.setText(balance.div(100).toPlainString());
         address.setPromptText(Address.fromKey(app.params(), new ECKey(), app.preferredOutputScriptType()).toString());
     }
 

@@ -53,13 +53,10 @@ public class ClickableBitcoinAddress extends AnchorPane implements OverlayContro
     protected SimpleObjectProperty<Address> address = new SimpleObjectProperty<>();
     private final StringExpression addressStr;
 
-    //private OverlayableStackPaneController rootController;
-
     private String appName = "app-name";
 
     @Override
     public void initOverlay(OverlayableStackPaneController overlayableStackPaneController, OverlayableStackPaneController.OverlayUI<? extends OverlayController<ClickableBitcoinAddress>> ui) {
-        //rootController = overlayableStackPaneController;
     }
 
     /**

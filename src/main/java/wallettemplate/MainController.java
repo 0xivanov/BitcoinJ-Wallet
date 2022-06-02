@@ -16,31 +16,33 @@
 
 package wallettemplate;
 
-import javafx.beans.binding.Binding;
-import javafx.beans.binding.Bindings;
-import javafx.beans.value.ObservableValue;
-import javafx.scene.Scene;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCombination;
-import javafx.scene.layout.*;
-import org.bitcoinj.core.listeners.DownloadProgressTracker;
-import org.bitcoinj.core.Coin;
-import org.bitcoinj.script.Script;
-import org.bitcoinj.utils.MonetaryFormat;
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
 import javafx.animation.TranslateTransition;
+import javafx.beans.binding.Binding;
+import javafx.beans.binding.Bindings;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCombination;
 import javafx.util.Duration;
+import org.bitcoinj.core.Coin;
+import org.bitcoinj.core.listeners.DownloadProgressTracker;
+import org.bitcoinj.script.Script;
+import org.bitcoinj.utils.MonetaryFormat;
 import org.bitcoinj.walletfx.application.MainWindowController;
 import org.bitcoinj.walletfx.application.WalletApplication;
-import org.bitcoinj.walletfx.controls.RecentTransactions;
-import org.bitcoinj.walletfx.utils.*;
 import org.bitcoinj.walletfx.controls.ClickableBitcoinAddress;
 import org.bitcoinj.walletfx.controls.NotificationBarPane;
+import org.bitcoinj.walletfx.controls.RecentTransactions;
+import org.bitcoinj.walletfx.utils.BitcoinUIModel;
+import org.bitcoinj.walletfx.utils.GuiUtils;
+import org.bitcoinj.walletfx.utils.TextFieldValidator;
+import org.bitcoinj.walletfx.utils.WTUtils;
 import org.bitcoinj.walletfx.utils.easing.EasingMode;
 import org.bitcoinj.walletfx.utils.easing.ElasticInterpolator;
 
@@ -48,7 +50,6 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 
-import static com.google.common.base.Preconditions.checkPositionIndex;
 import static com.google.common.base.Preconditions.checkState;
 
 /**
@@ -86,6 +87,7 @@ public class MainController extends MainWindowController {
         addressControl.initOverlay(this, null);
         addressControl.setAppName(app.applicationName());
         addressControl.setOpacity(0.0);
+        recentTransactions.setOpacity(0.0);
         requestMoneyBtn.setDisable(true);
     }
 
@@ -173,12 +175,16 @@ public class MainController extends MainWindowController {
 
     public void readyToGoAnimation() {
         // Buttons slide in and clickable address appears simultaneously.
-        //TranslateTransition arrive = new TranslateTransition(Duration.millis(1200));
-        //arrive.setInterpolator(new ElasticInterpolator(EasingMode.EASE_OUT, 1, 2));
-        //arrive.setToY(0.0);
+//        TranslateTransition arrive = new TranslateTransition(Duration.millis(1200), recentTransactions);
+//        arrive.setInterpolator(new ElasticInterpolator(EasingMode.EASE_OUT, 1, 2));
+//        arrive.setToY(0.0);
         FadeTransition reveal = new FadeTransition(Duration.millis(1200), addressControl);
         reveal.setToValue(1.0);
-        ParallelTransition group = new ParallelTransition(reveal);
+
+        FadeTransition reveal2 = new FadeTransition(Duration.millis(1200), recentTransactions);
+        reveal2.setToValue(1.0);
+
+        ParallelTransition group = new ParallelTransition(reveal, reveal2);
         group.setDelay(NotificationBarPane.ANIM_OUT_DURATION);
         group.setCycleCount(1);
         group.play();
