@@ -20,13 +20,14 @@
 
 <?import org.bitcoinj.walletfx.controls.RecentTransactions?>
 <?import org.bitcoinj.walletfx.controls.ClickableBitcoinAddress?>
+
 <TabPane minHeight="200.0" minWidth="300.0" prefHeight="451.0" prefWidth="900.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="wallettemplate.MainController">
   <tabs>
     <Tab text="Bitcoin Network">
          <content>
             <AnchorPane maxHeight="Infinity" maxWidth="Infinity" minHeight="200.0" minWidth="300.0" prefHeight="451.0" prefWidth="800.0" styleClass="root-pane">
                <children>
-                  <Label layoutX="31.0" layoutY="38.0" prefHeight="45.0" prefWidth="130.0" text="Balances">
+                  <Label layoutX="31.0" layoutY="38.0" prefHeight="45.0" prefWidth="164.0" text="Balances">
                      <font>
                         <Font name="System Bold" size="30.0" fx:id="x1" />
                      </font>
@@ -90,14 +91,14 @@
                   <HBox layoutX="44.0" layoutY="343.0" prefHeight="25.0" prefWidth="333.0" spacing="20" AnchorPane.rightAnchor="423.0" AnchorPane.topAnchor="343.0" />
                   <RecentTransactions fx:id="recentTransactions" layoutX="400.0" layoutY="26.0">
                   </RecentTransactions>
-                  <VBox layoutX="29.0" layoutY="252.0" prefHeight="104.0" prefWidth="123.0" spacing="13.0">
+                  <VBox layoutX="29.0" layoutY="252.0" prefHeight="104.0" prefWidth="165.0" spacing="13.0">
                      <children>
-                        <Button fx:id="sendMoneyOutBtn" alignment="CENTER" mnemonicParsing="false" onAction="#sendMoneyOut" prefHeight="25.0" prefWidth="137.0" style="-fx-base: lightgreen; -fx-font-weight: bold" styleClass="fat-button" text="Send money out" />
-                        <Button fx:id="requestMoneyBtn" alignment="CENTER" mnemonicParsing="false" onAction="#requestMoney" prefHeight="25.0" prefWidth="139.0" style="-fx-base: gold; -fx-font-weight: bold" styleClass="fat-button" text="Request money" />
+                        <Button fx:id="sendMoneyOutBtn" alignment="CENTER" mnemonicParsing="false" onAction="#sendMoneyOut" prefHeight="25.0" prefWidth="150.0" style="-fx-base: lightgreen; -fx-font-weight: bold" styleClass="fat-button" text="Send money out" />
+                        <Button fx:id="requestMoneyBtn" alignment="CENTER" mnemonicParsing="false" onAction="#requestMoney" prefHeight="25.0" prefWidth="148.0" style="-fx-base: gold; -fx-font-weight: bold" styleClass="fat-button" text="Request money" />
                         <Button alignment="CENTER" cancelButton="true" mnemonicParsing="false" onAction="#settingsClicked" prefHeight="25.0" prefWidth="137.0" styleClass="fat-button" text="Settings" />
                      </children>
                   </VBox>
-                  <TextField fx:id="btcToRequest" layoutX="167.0" layoutY="307.0" prefHeight="25.0" prefWidth="105.0" promptText="btc" />
+                  <TextField fx:id="btcToRequest" layoutX="206.0" layoutY="304.0" prefHeight="25.0" prefWidth="105.0" promptText="btc" />
                </children>
             </AnchorPane>
          </content>

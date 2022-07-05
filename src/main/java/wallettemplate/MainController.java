@@ -45,8 +45,15 @@ import org.bitcoinj.walletfx.utils.TextFieldValidator;
 import org.bitcoinj.walletfx.utils.WTUtils;
 import org.bitcoinj.walletfx.utils.easing.EasingMode;
 import org.bitcoinj.walletfx.utils.easing.ElasticInterpolator;
+import org.lightningj.lnd.wrapper.ClientSideException;
+import org.lightningj.lnd.wrapper.StatusException;
+import org.lightningj.lnd.wrapper.SynchronousLndAPI;
+import org.lightningj.lnd.wrapper.ValidationException;
 
+import javax.naming.OperationNotSupportedException;
+import javax.net.ssl.SSLException;
 import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 
@@ -142,8 +149,19 @@ public class MainController extends MainWindowController {
         syncItem = notificationBar.pushItem("Synchronising with the Bitcoin network", model.syncProgressProperty());
     }
 
-    public void sendMoneyOut(ActionEvent event) {
+    public void sendMoneyOut(ActionEvent event) throws StatusException, SSLException, ValidationException {
         // Hide this UI and show the send money UI. This UI won't be clickable until the user dismisses send_money.
+
+        File cert =  new File("/home/iivanov/.lnd/tls.cert");
+        File admin =  new File("/home/iivanov/.lnd/data/chain/bitcoin/testnet/admin.macaroon");
+        SynchronousLndAPI synchronousLndAPI = new SynchronousLndAPI("localhost",10009,cert,admin);
+
+        try {
+            System.out.println(synchronousLndAPI.channelBalance().toJsonAsString(true));
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
         overlayUI("send_money.fxml");
     }
 
@@ -155,9 +173,10 @@ public class MainController extends MainWindowController {
             Desktop.getDesktop().browse(URI.create(this.uri));
         } catch (IOException e) {
             GuiUtils.informationalAlert("Opening wallet app failed", "Perhaps you don't have one installed?");
+        } catch (UnsupportedOperationException e) {
+            GuiUtils.informationalAlert("Does not work on linux", "Perhaps you don't have one installed?");
         }
-        this.
-        overlayUI("request_uri.fxml");
+        this.overlayUI("request_uri.fxml");
     }
 
     public void settingsClicked(ActionEvent event) {

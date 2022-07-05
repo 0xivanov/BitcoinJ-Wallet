@@ -26,6 +26,7 @@ import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import org.bitcoinj.wallet.listeners.WalletCoinsReceivedEventListener;
 
 import java.util.Date;
 import java.util.List;
@@ -50,8 +51,8 @@ public class BitcoinUIModel {
     }
 
     public final void setWallet(Wallet wallet) {
-        wallet.addCoinsReceivedEventListener(Platform::runLater, (w, transaction, coin, coin1) -> updateBalance(w));
-        wallet.addChangeEventListener(Platform::runLater, w -> {
+        //wallet.addCoinsReceivedEventListener(Platform::runLater, (w, transaction, coin, coin1) -> updateBalance(w));
+        wallet.addChangeEventListener(w -> {
             updateBalance(w);
             updateRecentTransactions(w);
         });
