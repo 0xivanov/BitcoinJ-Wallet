@@ -23,6 +23,9 @@ import org.bitcoinj.params.RegTestParams;
 import org.bitcoinj.params.TestNet3Params;
 import org.bitcoinj.script.Script;
 import org.bitcoinj.walletfx.application.AppDelegate;
+import org.lightningj.lnd.wrapper.ClientSideException;
+
+import javax.net.ssl.SSLException;
 
 /**
  * Proxy JavaFX {@link Application} that delegates all functionality
@@ -40,7 +43,13 @@ public class Main extends Application {
     }
 
     public Main() {
-        delegate = new WalletTemplate(APP_NAME, params, PREFERRED_OUTPUT_SCRIPT_TYPE);
+        try {
+            delegate = new WalletTemplate(APP_NAME, params, PREFERRED_OUTPUT_SCRIPT_TYPE);
+        } catch (ClientSideException e) {
+            throw new RuntimeException(e);
+        } catch (SSLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

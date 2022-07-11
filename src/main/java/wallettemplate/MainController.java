@@ -69,6 +69,10 @@ public class MainController extends MainWindowController {
     public Button sendMoneyOutBtn;
     public Button requestMoneyBtn;
     public TextField btcToRequest;
+    public Label lnbalance;
+    public Button sendSats;
+    public Button requestSats;
+    public TextField satsToRequest;
     public ClickableBitcoinAddress addressControl;
     public RecentTransactions recentTransactions;
 
@@ -77,6 +81,7 @@ public class MainController extends MainWindowController {
     private static final MonetaryFormat MONETARY_FORMAT = MonetaryFormat.BTC.noCode();
     protected String uri;
     private WalletApplication app;
+
     private NotificationBarPane notificationBar;
 
     // Called by FXMLLoader.
@@ -114,6 +119,7 @@ public class MainController extends MainWindowController {
 
     @Override
     public void onBitcoinSetup() {
+
         model.setWallet(app.walletAppKit().wallet());
         addressControl.addressProperty().bind(model.addressProperty());
         balance.textProperty().bind(createBalanceStringBinding(model.balanceProperty()));
@@ -151,17 +157,6 @@ public class MainController extends MainWindowController {
 
     public void sendMoneyOut(ActionEvent event) throws StatusException, SSLException, ValidationException {
         // Hide this UI and show the send money UI. This UI won't be clickable until the user dismisses send_money.
-
-        File cert =  new File("/home/iivanov/.lnd/tls.cert");
-        File admin =  new File("/home/iivanov/.lnd/data/chain/bitcoin/testnet/admin.macaroon");
-        SynchronousLndAPI synchronousLndAPI = new SynchronousLndAPI("localhost",10009,cert,admin);
-
-        try {
-            System.out.println(synchronousLndAPI.channelBalance().toJsonAsString(true));
-        } catch (Exception e)
-        {
-            e.printStackTrace();
-        }
         overlayUI("send_money.fxml");
     }
 

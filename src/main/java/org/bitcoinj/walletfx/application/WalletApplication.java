@@ -30,9 +30,12 @@ import org.bitcoinj.utils.BriefLogFormatter;
 import org.bitcoinj.utils.Threading;
 import org.bitcoinj.wallet.DeterministicSeed;
 import org.bitcoinj.walletfx.utils.GuiUtils;
+import org.lightningj.lnd.wrapper.ClientSideException;
+import org.lightningj.lnd.wrapper.SynchronousLndAPI;
 import wallettemplate.WalletSetPasswordController;
 
 import javax.annotation.Nullable;
+import javax.net.ssl.SSLException;
 import java.io.File;
 import java.io.IOException;
 
@@ -44,18 +47,23 @@ import static org.bitcoinj.walletfx.utils.GuiUtils.informationalAlert;
 public abstract class WalletApplication implements AppDelegate {
     private static WalletApplication instance;
     private WalletAppKit walletAppKit;
+    private SynchronousLndAPI lndAPI;
     private final String applicationName;
     private final NetworkParameters params;
     private final Script.ScriptType preferredOutputScriptType;
     private final String walletFileName;
     private MainWindowController controller;
 
-    public WalletApplication(String applicationName, NetworkParameters params, Script.ScriptType preferredOutputScriptType) {
+    public WalletApplication(String applicationName, NetworkParameters params, Script.ScriptType preferredOutputScriptType) throws ClientSideException, SSLException {
         instance = this;
         this.applicationName = applicationName;
         this.walletFileName = applicationName.replaceAll("[^a-zA-Z0-9.-]", "_") + "-" + params.getPaymentProtocolId();
         this.params = params;
         this.preferredOutputScriptType = preferredOutputScriptType;
+
+        File cert =  new File("/home/iivanov/.lnd/tls.cert");
+        File admin =  new File("/home/iivanov/.lnd/data/chain/bitcoin/testnet/admin.macaroon");
+        this.lndAPI = new SynchronousLndAPI("localhost",10009,cert,admin);
     }
 
     public static WalletApplication instance() {
@@ -64,6 +72,10 @@ public abstract class WalletApplication implements AppDelegate {
 
     public WalletAppKit walletAppKit() {
         return walletAppKit;
+    }
+
+    public SynchronousLndAPI lndAPI() {
+        return lndAPI;
     }
 
     public String applicationName() {

@@ -13,14 +13,11 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
 
-<?import org.bitcoinj.walletfx.controls.RecentTransactions?>
 <?import org.bitcoinj.walletfx.controls.ClickableBitcoinAddress?>
-
+<?import org.bitcoinj.walletfx.controls.RecentTransactions?>
 <TabPane minHeight="200.0" minWidth="300.0" prefHeight="451.0" prefWidth="900.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="wallettemplate.MainController">
   <tabs>
     <Tab text="Bitcoin Network">
@@ -57,7 +54,7 @@
                      <children>
                         <Label text="Pending:">
                            <font>
-                              <Font size="18.0" fx:id="x121" />
+                              <Font size="18.0"/>
                            </font>
                            <padding>
                               <Insets right="16.0" />
@@ -107,22 +104,31 @@
          <content>
             <AnchorPane maxHeight="Infinity" maxWidth="Infinity" minHeight="200.0" minWidth="300.0" prefHeight="451.0" prefWidth="800.0" styleClass="root-pane">
                <children>
-                  <Label layoutX="14.0" layoutY="14.0" text="Balance">
+                  <Label layoutX="31.0" layoutY="38.0" prefHeight="45.0" prefWidth="164.0" text="Balances">
                      <font>
-                        <Font name="System Bold" size="25.0" fx:id="x11" />
+                        <Font name="System Bold" size="30.0" fx:id="x11" />
                      </font>
                   </Label>
-                  <HBox alignment="CENTER_LEFT" prefHeight="30.0" prefWidth="305.0" AnchorPane.leftAnchor="143.0" AnchorPane.rightAnchor="152.0" AnchorPane.topAnchor="14.0">
+                  <HBox alignment="CENTER_LEFT" layoutX="29.0" layoutY="89.0" prefHeight="45.0" prefWidth="317.0" AnchorPane.leftAnchor="29.0" AnchorPane.rightAnchor="454.0" AnchorPane.topAnchor="89.0">
                      <children>
-                        <Label fx:id="balance1" text="0.00" underline="false">
+                        <Label text="Available:">
                            <font>
-                              <Font size="25.0" />
+                              <Font size="18.0" />
                            </font>
-                           <textFill>
-                              <Color red="0.750" green="0.750" blue="0.750" fx:id="x21" />
-                           </textFill>
+                           <padding>
+                              <Insets right="10.0" />
+                           </padding>
                         </Label>
-                        <Label font="$x11" text="BTC" textFill="$x21" />
+                        <Label fx:id="lnbalance" text="0.00" textFill="#5d3fd3" underline="false">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Label>
+                        <Label text="SATS">
+                           <font>
+                              <Font name="System Bold" size="18.0" />
+                           </font>
+                        </Label>
                      </children>
                   </HBox>
                   <ImageView fitHeight="243.0" fitWidth="243.0" opacity="0.28" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="-36.0" AnchorPane.rightAnchor="-34.0">
@@ -137,19 +143,14 @@
                         <Image url="@../org/bitcoinj/walletfx/images/lightning_logo.png" />
                      </image>
                   </ImageView>
-                  <ClickableBitcoinAddress fx:id="addressControl1" layoutY="45.0" prefHeight="21.0" prefWidth="391.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="195.0" />
-                  <StackPane layoutX="14.0" layoutY="81.0" prefHeight="249.0" prefWidth="572.0" style="-fx-border-color: lightgrey; -fx-border-style: dashed" AnchorPane.bottomAnchor="70.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="81.0">
+                  <VBox layoutX="29.0" layoutY="252.0" prefHeight="104.0" prefWidth="165.0" spacing="13.0">
                      <children>
-                        <Label text="Your content goes here" />
+                        <Button fx:id="sendSats" alignment="CENTER" mnemonicParsing="false" onAction="#sendMoneyOut" prefHeight="25.0" prefWidth="150.0" style="-fx-base: lightgreen; -fx-font-weight: bold" styleClass="fat-button" text="Send money out" />
+                        <Button fx:id="requestSats" alignment="CENTER" mnemonicParsing="false" onAction="#requestMoney" prefHeight="25.0" prefWidth="148.0" style="-fx-base: #5D3FD3; -fx-font-weight: bold;" styleClass="fat-button" text="Request money" />
+                        <Button alignment="CENTER" cancelButton="true" mnemonicParsing="false" onAction="#settingsClicked" prefHeight="25.0" prefWidth="137.0" styleClass="fat-button" text="Settings" />
                      </children>
-                  </StackPane>
-                  <HBox spacing="20" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="17.0">
-                     <children>
-                        <Button onAction="#settingsClicked" style="-fx-base: white;" styleClass="fat-button" text="Settings" />
-                        <Button id="sendMoneyOut" fx:id="sendMoneyOutBtn1" alignment="CENTER" mnemonicParsing="false" onAction="#sendMoneyOut" style="-fx-base: lightgreen; -fx-font-weight: bold" styleClass="fat-button" text="Send money out" />
-                     </children>
-                  </HBox>
-                  <TextField layoutX="676.0" layoutY="70.0" prefHeight="25.0" prefWidth="110.0" promptText="sats" />
+                  </VBox>
+                  <TextField fx:id="satsToRequest" layoutX="206.0" layoutY="304.0" prefHeight="25.0" prefWidth="105.0" promptText="sats" />
                </children>
             </AnchorPane>
          </content>
