@@ -30,6 +30,7 @@ import org.bitcoinj.utils.BriefLogFormatter;
 import org.bitcoinj.utils.Threading;
 import org.bitcoinj.wallet.DeterministicSeed;
 import org.bitcoinj.walletfx.utils.GuiUtils;
+import org.lightningj.lnd.wrapper.AsynchronousLndAPI;
 import org.lightningj.lnd.wrapper.ClientSideException;
 import org.lightningj.lnd.wrapper.SynchronousLndAPI;
 import wallettemplate.WalletSetPasswordController;
@@ -47,7 +48,7 @@ import static org.bitcoinj.walletfx.utils.GuiUtils.informationalAlert;
 public abstract class WalletApplication implements AppDelegate {
     private static WalletApplication instance;
     private WalletAppKit walletAppKit;
-    private SynchronousLndAPI lndAPI;
+    private AsynchronousLndAPI lndAPI;
     private final String applicationName;
     private final NetworkParameters params;
     private final Script.ScriptType preferredOutputScriptType;
@@ -63,7 +64,7 @@ public abstract class WalletApplication implements AppDelegate {
 
         File cert =  new File("/home/iivanov/.lnd/tls.cert");
         File admin =  new File("/home/iivanov/.lnd/data/chain/bitcoin/testnet/admin.macaroon");
-        this.lndAPI = new SynchronousLndAPI("localhost",10009,cert,admin);
+        this.lndAPI = new AsynchronousLndAPI("localhost",10009,cert,admin);
     }
 
     public static WalletApplication instance() {
@@ -74,7 +75,7 @@ public abstract class WalletApplication implements AppDelegate {
         return walletAppKit;
     }
 
-    public SynchronousLndAPI lndAPI() {
+    public AsynchronousLndAPI lndAPI() {
         return lndAPI;
     }
 

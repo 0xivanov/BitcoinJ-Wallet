@@ -39,16 +39,15 @@ import org.bitcoinj.walletfx.application.WalletApplication;
 import org.bitcoinj.walletfx.controls.ClickableBitcoinAddress;
 import org.bitcoinj.walletfx.controls.NotificationBarPane;
 import org.bitcoinj.walletfx.controls.RecentTransactions;
-import org.bitcoinj.walletfx.utils.BitcoinUIModel;
-import org.bitcoinj.walletfx.utils.GuiUtils;
-import org.bitcoinj.walletfx.utils.TextFieldValidator;
-import org.bitcoinj.walletfx.utils.WTUtils;
+import org.bitcoinj.walletfx.utils.*;
 import org.bitcoinj.walletfx.utils.easing.EasingMode;
 import org.bitcoinj.walletfx.utils.easing.ElasticInterpolator;
+import org.lightningj.lnd.proto.LightningApi;
 import org.lightningj.lnd.wrapper.ClientSideException;
 import org.lightningj.lnd.wrapper.StatusException;
 import org.lightningj.lnd.wrapper.SynchronousLndAPI;
 import org.lightningj.lnd.wrapper.ValidationException;
+import org.lightningj.lnd.wrapper.message.WalletBalanceResponse;
 
 import javax.naming.OperationNotSupportedException;
 import javax.net.ssl.SSLException;
@@ -69,14 +68,15 @@ public class MainController extends MainWindowController {
     public Button sendMoneyOutBtn;
     public Button requestMoneyBtn;
     public TextField btcToRequest;
+    public ClickableBitcoinAddress addressControl;
+    public RecentTransactions recentTransactions;
+    private final BitcoinUIModel model = new BitcoinUIModel(this.app.walletAppKit().wallet());
     public Label lnbalance;
     public Button sendSats;
     public Button requestSats;
     public TextField satsToRequest;
-    public ClickableBitcoinAddress addressControl;
-    public RecentTransactions recentTransactions;
 
-    private final BitcoinUIModel model = new BitcoinUIModel();
+    private LndModel lndModel = new LndModel(this.app.lndAPI());
     private NotificationBarPane.Item syncItem;
     private static final MonetaryFormat MONETARY_FORMAT = MonetaryFormat.BTC.noCode();
     protected String uri;
@@ -119,11 +119,11 @@ public class MainController extends MainWindowController {
 
     @Override
     public void onBitcoinSetup() {
-
-        model.setWallet(app.walletAppKit().wallet());
         addressControl.addressProperty().bind(model.addressProperty());
         balance.textProperty().bind(createBalanceStringBinding(model.balanceProperty()));
         pending.textProperty().bind(createBalanceStringBinding(model.pendingProperty()));
+
+        lnbalance.textProperty().bind(createBalanceStringBindingLnd(lndModel.balanceProperty()));
         // Don't let the user click send money when the wallet is empty.
         sendMoneyOutBtn.disableProperty().bind(model.balanceProperty().isEqualTo(Coin.ZERO));
         recentTransactions.recentTransactionsProperty().bind(model.recentTransactionsProperty());
@@ -149,6 +149,10 @@ public class MainController extends MainWindowController {
 
     private static Binding<String> createBalanceStringBinding(ObservableValue<Coin> coinProperty) {
         return Bindings.createStringBinding(() -> formatCoin(coinProperty.getValue()), coinProperty);
+    }
+
+    private static Binding<String> createBalanceStringBindingLnd(ObservableValue<WalletBalanceResponse> coinProperty) {
+        return Bindings.createStringBinding(() -> String.valueOf(coinProperty.getValue().getConfirmedBalance()), coinProperty);
     }
 
     private void showBitcoinSyncMessage() {
