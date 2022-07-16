@@ -44,12 +44,10 @@ public class BitcoinUIModel {
     private ProgressBarUpdater syncProgressUpdater = new ProgressBarUpdater();
 
 
-    public BitcoinUIModel(Wallet wallet) {
-        setupWallet(wallet);
+    public BitcoinUIModel() {
     }
 
     public final void setupWallet(Wallet wallet) {
-        //wallet.addCoinsReceivedEventListener(Platform::runLater, (w, transaction, coin, coin1) -> updateBalance(w));
         wallet.addChangeEventListener(w -> {
             updateBalance(w);
             updateRecentTransactions(w);

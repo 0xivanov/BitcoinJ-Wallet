@@ -16,6 +16,7 @@
 
 package wallettemplate;
 
+import io.grpc.stub.StreamObserver;
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
 import javafx.animation.TranslateTransition;
@@ -47,7 +48,7 @@ import org.lightningj.lnd.wrapper.ClientSideException;
 import org.lightningj.lnd.wrapper.StatusException;
 import org.lightningj.lnd.wrapper.SynchronousLndAPI;
 import org.lightningj.lnd.wrapper.ValidationException;
-import org.lightningj.lnd.wrapper.message.WalletBalanceResponse;
+import org.lightningj.lnd.wrapper.message.*;
 
 import javax.naming.OperationNotSupportedException;
 import javax.net.ssl.SSLException;
@@ -70,13 +71,14 @@ public class MainController extends MainWindowController {
     public TextField btcToRequest;
     public ClickableBitcoinAddress addressControl;
     public RecentTransactions recentTransactions;
-    private final BitcoinUIModel model = new BitcoinUIModel(this.app.walletAppKit().wallet());
-    public Label lnbalance;
+    private final BitcoinUIModel model = new BitcoinUIModel();
+    public Label lndbalance;
     public Button sendSats;
     public Button requestSats;
+    public TextField paymentRequest;
     public TextField satsToRequest;
 
-    private LndModel lndModel = new LndModel(this.app.lndAPI());
+    public LndModel lndModel = new LndModel();
     private NotificationBarPane.Item syncItem;
     private static final MonetaryFormat MONETARY_FORMAT = MonetaryFormat.BTC.noCode();
     protected String uri;
@@ -119,11 +121,22 @@ public class MainController extends MainWindowController {
 
     @Override
     public void onBitcoinSetup() {
+        model.setupWallet(this.app.walletAppKit().wallet());
+        try {
+            lndModel.setupLnd(this.app.lndAPI());
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+
         addressControl.addressProperty().bind(model.addressProperty());
         balance.textProperty().bind(createBalanceStringBinding(model.balanceProperty()));
         pending.textProperty().bind(createBalanceStringBinding(model.pendingProperty()));
 
-        lnbalance.textProperty().bind(createBalanceStringBindingLnd(lndModel.balanceProperty()));
+        try {
+            lndbalance.textProperty().bind(createBalanceStringBindingLnd(lndModel.balanceProperty()));
+        } catch (Exception e) {
+            System.out.println(e);
+        }
         // Don't let the user click send money when the wallet is empty.
         sendMoneyOutBtn.disableProperty().bind(model.balanceProperty().isEqualTo(Coin.ZERO));
         recentTransactions.recentTransactionsProperty().bind(model.recentTransactionsProperty());
@@ -147,12 +160,16 @@ public class MainController extends MainWindowController {
         return MONETARY_FORMAT.format(coin).toString();
     }
 
+    private static String formatAmount(Long coin) {
+        return String.valueOf(coin);
+    }
+
     private static Binding<String> createBalanceStringBinding(ObservableValue<Coin> coinProperty) {
         return Bindings.createStringBinding(() -> formatCoin(coinProperty.getValue()), coinProperty);
     }
 
-    private static Binding<String> createBalanceStringBindingLnd(ObservableValue<WalletBalanceResponse> coinProperty) {
-        return Bindings.createStringBinding(() -> String.valueOf(coinProperty.getValue().getConfirmedBalance()), coinProperty);
+    private Binding<String> createBalanceStringBindingLnd(ObservableValue<Long> sats) throws ClientSideException {
+        return Bindings.createStringBinding(() -> formatAmount(sats.getValue()), sats);
     }
 
     private void showBitcoinSyncMessage() {
@@ -176,6 +193,40 @@ public class MainController extends MainWindowController {
             GuiUtils.informationalAlert("Does not work on linux", "Perhaps you don't have one installed?");
         }
         this.overlayUI("request_uri.fxml");
+    }
+
+    public void sendSats(ActionEvent actionEvent) {
+
+
+        SendRequest sendRequest = new SendRequest();
+        sendRequest.setPaymentRequest(paymentRequest.getText());
+        try {
+            app.lndAPI().sendPaymentSync(sendRequest, new StreamObserver<>() {
+                @Override
+                public void onNext(SendResponse sendResponse) {
+                    Long value = null;
+                    try {
+                        value = sendResponse.getPaymentRoute().getTotalAmt();
+                    } catch (Exception e) {
+                        System.out.println(e);
+                    }
+                    LndModel.updateBalance(0 - value);
+                }
+
+                @Override
+                public void onError(Throwable t) {
+                    System.err.println("Error occurred " + t.getMessage());
+                    t.printStackTrace(System.err);
+                }
+
+                @Override
+                public void onCompleted() {
+
+                }
+            });
+        } catch (Exception e) {
+            System.out.println(e);
+        }
     }
 
     public void settingsClicked(ActionEvent event) {
@@ -221,5 +272,4 @@ public class MainController extends MainWindowController {
     private boolean testAmountToRequest(String amount) {
         return amount.isEmpty() || !WTUtils.didThrow(() -> checkState(Coin.parseCoin(amount).value > 0));
     }
-
 }

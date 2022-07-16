@@ -1,74 +1,84 @@
 package org.bitcoinj.walletfx.utils;
 
 import io.grpc.stub.StreamObserver;
+import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import org.lightningj.lnd.proto.LightningApi;
-import org.lightningj.lnd.wrapper.AsynchronousLndAPI;
-import org.lightningj.lnd.wrapper.StatusException;
-import org.lightningj.lnd.wrapper.ValidationException;
+import org.lightningj.lnd.wrapper.*;
 import org.lightningj.lnd.wrapper.message.*;
 
 public class LndModel {
 
+    private Amount amount = new Amount();
 
     //wallet balance
-    private SimpleObjectProperty<WalletBalanceResponse> lndBalance;
+    private static SimpleObjectProperty<Long> lndBalance = new SimpleObjectProperty<>(0L);
     //channel list
-    private SimpleObjectProperty<ListChannelsResponse> lndChannels;
+    private SimpleObjectProperty<ListChannelsResponse> lndChannels = new SimpleObjectProperty<>();
     //invoices
-    private SimpleObjectProperty<ListInvoiceResponse> lndInvoices;
+    private SimpleObjectProperty<ListInvoiceResponse> lndInvoices = new SimpleObjectProperty<>();
 
 
-    public LndModel(AsynchronousLndAPI lndApi) {
-        try {
-            setupLnd(lndApi);
-        } catch (StatusException e) {
-            throw new RuntimeException(e);
-        } catch (ValidationException e) {
-            throw new RuntimeException(e);
-        }
+    public LndModel() {
+        amount.setSat(12);
     }
 
-    private void setupLnd(AsynchronousLndAPI lndAPI) throws StatusException, ValidationException {
-        lndAPI.subscribeTransactions(new GetTransactionsRequest(), new StreamObserver<>() {
+    public void setupLnd(AsynchronousLndAPI lndAPI) throws StatusException, ValidationException {
+        lndAPI.subscribeInvoices(new InvoiceSubscription(), new StreamObserver<>() {
             @Override
-            public void onNext(Transaction transaction) {
-                System.out.println("sdfsddf");
-            }
-
-            @Override
-            public void onError(Throwable throwable) {
-                System.out.println("sdfsddf");
-            }
-
-            @Override
-            public void onCompleted() {
-                System.out.println("sdfsddf");
-            }
-        });
-
-        lndAPI.walletBalance(new StreamObserver<>() {
-            @Override
-            public void onNext(WalletBalanceResponse value) {
-                lndBalance.set(value);
-                System.out.println("Received WalletBalance response: " + value.toJsonAsString(true));
+            public void onNext(Invoice invoice) {
+                if(invoice.getSettled()) {
+                    Long value = invoice.getValue();
+                    updateBalance(value);
+                }
             }
 
             @Override
             public void onError(Throwable t) {
-                System.err.println("Error occurred during WalletBalance call: " + t.getMessage());
+                System.err.println("Error occurred " + t.getMessage());
                 t.printStackTrace(System.err);
             }
 
             @Override
             public void onCompleted() {
-                System.out.println("WalletBalance call closed.");
+
+            }
+        });
+
+        lndAPI.channelBalance(new StreamObserver<>() {
+            @Override
+            public void onNext(ChannelBalanceResponse value) {
+                Platform.runLater(() -> {
+                    try {
+                        lndBalance.set(value.getLocalBalance().getSat());
+                    } catch (Exception e) {
+                        System.out.println(e);
+                    }
+                });
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                System.err.println("Error occurred " + t.getMessage());
+                t.printStackTrace(System.err);
+            }
+
+            @Override
+            public void onCompleted() {
             }
         });
     }
 
-    public ReadOnlyObjectProperty<WalletBalanceResponse> balanceProperty() {
+    public static void updateBalance(Long value) {
+        Platform.runLater(() -> {
+            try {
+                lndBalance.set(lndBalance.getValue() + value);
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        });
+    }
+    public ReadOnlyObjectProperty<Long> balanceProperty() {
         return this.lndBalance;
     }
 }

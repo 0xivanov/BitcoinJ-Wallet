@@ -54,7 +54,7 @@
                      <children>
                         <Label text="Pending:">
                            <font>
-                              <Font size="18.0"/>
+                              <Font size="18.0" />
                            </font>
                            <padding>
                               <Insets right="16.0" />
@@ -119,7 +119,7 @@
                               <Insets right="10.0" />
                            </padding>
                         </Label>
-                        <Label fx:id="lnbalance" text="0.00" textFill="#5d3fd3" underline="false">
+                        <Label fx:id="lndbalance" text="0.00" textFill="#5d3fd3" underline="false">
                            <font>
                               <Font size="18.0" />
                            </font>
@@ -145,12 +145,13 @@
                   </ImageView>
                   <VBox layoutX="29.0" layoutY="252.0" prefHeight="104.0" prefWidth="165.0" spacing="13.0">
                      <children>
-                        <Button fx:id="sendSats" alignment="CENTER" mnemonicParsing="false" onAction="#sendMoneyOut" prefHeight="25.0" prefWidth="150.0" style="-fx-base: lightgreen; -fx-font-weight: bold" styleClass="fat-button" text="Send money out" />
+                        <Button fx:id="sendSats" alignment="CENTER" mnemonicParsing="false" onAction="#sendSats" prefHeight="25.0" prefWidth="150.0" style="-fx-base: lightgreen; -fx-font-weight: bold" styleClass="fat-button" text="Send sats" />
                         <Button fx:id="requestSats" alignment="CENTER" mnemonicParsing="false" onAction="#requestMoney" prefHeight="25.0" prefWidth="148.0" style="-fx-base: #5D3FD3; -fx-font-weight: bold;" styleClass="fat-button" text="Request money" />
                         <Button alignment="CENTER" cancelButton="true" mnemonicParsing="false" onAction="#settingsClicked" prefHeight="25.0" prefWidth="137.0" styleClass="fat-button" text="Settings" />
                      </children>
                   </VBox>
                   <TextField fx:id="satsToRequest" layoutX="206.0" layoutY="304.0" prefHeight="25.0" prefWidth="105.0" promptText="sats" />
+                  <TextField fx:id="paymentRequest" layoutX="31.0" layoutY="201.0" prefHeight="25.0" prefWidth="248.0" promptText="payment request" />
                </children>
             </AnchorPane>
          </content>
