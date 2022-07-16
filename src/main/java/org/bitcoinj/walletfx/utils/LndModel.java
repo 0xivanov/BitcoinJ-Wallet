@@ -3,20 +3,21 @@ package org.bitcoinj.walletfx.utils;
 import io.grpc.stub.StreamObserver;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import org.lightningj.lnd.wrapper.*;
 import org.lightningj.lnd.wrapper.message.*;
+
+import java.util.List;
 
 public class LndModel {
 
     private Amount amount = new Amount();
 
-    //wallet balance
+    //channel balance
     private static SimpleObjectProperty<Long> lndBalance = new SimpleObjectProperty<>(0L);
-    //channel list
-    private SimpleObjectProperty<ListChannelsResponse> lndChannels = new SimpleObjectProperty<>();
     //invoices
-    private SimpleObjectProperty<ListInvoiceResponse> lndInvoices = new SimpleObjectProperty<>();
+    private SimpleListProperty<Invoice> lndInvoices = new SimpleListProperty<>();
 
 
     public LndModel() {
@@ -27,22 +28,23 @@ public class LndModel {
         lndAPI.subscribeInvoices(new InvoiceSubscription(), new StreamObserver<>() {
             @Override
             public void onNext(Invoice invoice) {
-                if(invoice.getSettled()) {
-                    Long value = invoice.getValue();
-                    updateBalance(value);
-                }
+                Platform.runLater(() -> {
+                    if(invoice.getSettled()) {
+                        Long value = invoice.getValue();
+                        lndInvoices.remove(lndInvoices.get(lndInvoices.size()-1));
+                        updateBalance(value);
+                    } else {
+                        lndInvoices.add(invoice);
+                    }
+                });
             }
-
             @Override
             public void onError(Throwable t) {
                 System.err.println("Error occurred " + t.getMessage());
                 t.printStackTrace(System.err);
             }
-
             @Override
-            public void onCompleted() {
-
-            }
+            public void onCompleted() {}
         });
 
         lndAPI.channelBalance(new StreamObserver<>() {
@@ -56,16 +58,13 @@ public class LndModel {
                     }
                 });
             }
-
             @Override
             public void onError(Throwable t) {
                 System.err.println("Error occurred " + t.getMessage());
                 t.printStackTrace(System.err);
             }
-
             @Override
-            public void onCompleted() {
-            }
+            public void onCompleted() {}
         });
     }
 
@@ -80,5 +79,9 @@ public class LndModel {
     }
     public ReadOnlyObjectProperty<Long> balanceProperty() {
         return this.lndBalance;
+    }
+
+    public SimpleListProperty<Invoice> invoicesProperty() {
+        return this.lndInvoices;
     }
 }

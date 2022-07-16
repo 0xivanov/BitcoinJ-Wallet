@@ -2,6 +2,7 @@
 
 <?scenebuilder-classpath-element ../../../../target/classes?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Tab?>
@@ -16,8 +17,8 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<?import org.bitcoinj.walletfx.controls.ClickableBitcoinAddress?>
 <?import org.bitcoinj.walletfx.controls.RecentTransactions?>
+<?import org.bitcoinj.walletfx.controls.ClickableBitcoinAddress?>
 <TabPane minHeight="200.0" minWidth="300.0" prefHeight="451.0" prefWidth="900.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="wallettemplate.MainController">
   <tabs>
     <Tab text="Bitcoin Network">
@@ -145,13 +146,24 @@
                   </ImageView>
                   <VBox layoutX="29.0" layoutY="252.0" prefHeight="104.0" prefWidth="165.0" spacing="13.0">
                      <children>
-                        <Button fx:id="sendSats" alignment="CENTER" mnemonicParsing="false" onAction="#sendSats" prefHeight="25.0" prefWidth="150.0" style="-fx-base: lightgreen; -fx-font-weight: bold" styleClass="fat-button" text="Send sats" />
-                        <Button fx:id="requestSats" alignment="CENTER" mnemonicParsing="false" onAction="#requestMoney" prefHeight="25.0" prefWidth="148.0" style="-fx-base: #5D3FD3; -fx-font-weight: bold;" styleClass="fat-button" text="Request money" />
+                        <Button fx:id="sendSatsBtn" alignment="CENTER" mnemonicParsing="false" onAction="#sendSats" prefHeight="25.0" prefWidth="150.0" style="-fx-base: lightgreen; -fx-font-weight: bold" styleClass="fat-button" text="Send sats" />
+                        <Button fx:id="requestSatsBtn" alignment="CENTER" mnemonicParsing="false" onAction="#makeInvoice" prefHeight="25.0" prefWidth="148.0" style="-fx-base: #5D3FD3; -fx-font-weight: bold;" styleClass="fat-button" text="Request money" />
                         <Button alignment="CENTER" cancelButton="true" mnemonicParsing="false" onAction="#settingsClicked" prefHeight="25.0" prefWidth="137.0" styleClass="fat-button" text="Settings" />
                      </children>
                   </VBox>
                   <TextField fx:id="satsToRequest" layoutX="206.0" layoutY="304.0" prefHeight="25.0" prefWidth="105.0" promptText="sats" />
                   <TextField fx:id="paymentRequest" layoutX="31.0" layoutY="201.0" prefHeight="25.0" prefWidth="248.0" promptText="payment request" />
+                  <VBox alignment="CENTER" layoutX="373.0" prefHeight="328.0" prefWidth="428.0" spacing="20.0" style="-fx-background-color: transparent;">
+                     <children>
+                        <ImageView fx:id="invoiceQrCode" fitHeight="247.0" fitWidth="289.0" layoutX="63.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
+                           <cursor>
+                              <Cursor fx:constant="DEFAULT" />
+                           </cursor>
+                        </ImageView>
+                        <Label fx:id="invoice" layoutX="18.0" layoutY="205.0" prefHeight="25.0" prefWidth="336.0" text="invoice" />
+                        <Button fx:id="copyInvoice" cancelButton="true" layoutX="63.0" layoutY="242.0" mnemonicParsing="false" onAction="#copyInvoice" prefWidth="79.0" text="Copy" />
+                     </children>
+                  </VBox>
                </children>
             </AnchorPane>
          </content>

@@ -37,7 +37,6 @@ public class RequestUriController implements OverlayController<RequestUriControl
 
     @FXML
     protected void copy(ActionEvent event) {
-        // User clicked icon or menu item.
         Clipboard clipboard = Clipboard.getSystemClipboard();
         ClipboardContent content = new ClipboardContent();
         content.putString(uriLabel.getText());

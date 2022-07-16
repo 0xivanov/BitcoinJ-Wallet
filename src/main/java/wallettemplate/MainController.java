@@ -20,15 +20,22 @@ import io.grpc.stub.StreamObserver;
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
 import javafx.animation.TranslateTransition;
+import javafx.application.Platform;
 import javafx.beans.binding.Binding;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyCombination;
 import javafx.util.Duration;
 import org.bitcoinj.core.Coin;
@@ -41,21 +48,12 @@ import org.bitcoinj.walletfx.controls.ClickableBitcoinAddress;
 import org.bitcoinj.walletfx.controls.NotificationBarPane;
 import org.bitcoinj.walletfx.controls.RecentTransactions;
 import org.bitcoinj.walletfx.utils.*;
-import org.bitcoinj.walletfx.utils.easing.EasingMode;
-import org.bitcoinj.walletfx.utils.easing.ElasticInterpolator;
-import org.lightningj.lnd.proto.LightningApi;
-import org.lightningj.lnd.wrapper.ClientSideException;
-import org.lightningj.lnd.wrapper.StatusException;
-import org.lightningj.lnd.wrapper.SynchronousLndAPI;
-import org.lightningj.lnd.wrapper.ValidationException;
 import org.lightningj.lnd.wrapper.message.*;
 
-import javax.naming.OperationNotSupportedException;
-import javax.net.ssl.SSLException;
 import java.awt.*;
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.util.List;
 
 import static com.google.common.base.Preconditions.checkState;
 
@@ -64,6 +62,10 @@ import static com.google.common.base.Preconditions.checkState;
  * after. This class handles all the updates and event handling for the main UI.
  */
 public class MainController extends MainWindowController {
+
+
+    // bitcoin
+    private final BitcoinUIModel model = new BitcoinUIModel();
     public Label balance;
     public Label pending;
     public Button sendMoneyOutBtn;
@@ -71,22 +73,23 @@ public class MainController extends MainWindowController {
     public TextField btcToRequest;
     public ClickableBitcoinAddress addressControl;
     public RecentTransactions recentTransactions;
-    private final BitcoinUIModel model = new BitcoinUIModel();
-    public Label lndbalance;
-    public Button sendSats;
-    public Button requestSats;
-    public TextField paymentRequest;
-    public TextField satsToRequest;
-
-    public LndModel lndModel = new LndModel();
     private NotificationBarPane.Item syncItem;
     private static final MonetaryFormat MONETARY_FORMAT = MonetaryFormat.BTC.noCode();
     protected String uri;
-    private WalletApplication app;
-
     private NotificationBarPane notificationBar;
 
-    // Called by FXMLLoader.
+    //lightning
+    public LndModel lndModel = new LndModel();
+    public Label lndbalance;
+    public Label invoice;
+    public Button copyInvoice;
+    public ImageView invoiceQrCode;
+    public Button sendSatsBtn;
+    public Button requestSatsBtn;
+    public TextField paymentRequest;
+    public TextField satsToRequest;
+    private WalletApplication app;
+
     public void initialize() {
         app = WalletApplication.instance();
         scene = new Scene(uiStack);
@@ -95,9 +98,10 @@ public class MainController extends MainWindowController {
             checkButton(amount);
             return testAmountToRequest(amount);
         });
-        //btcToRequest.textProperty().addListener((observableValue, prev, current) -> checkButton(current));
-        // Special case of initOverlay that passes null as the 2nd parameter because ClickableBitcoinAddress is loaded by FXML
-        // TODO: Extract QRCode Pane to separate reusable class that is a more standard OverlayController instance
+        new TextFieldValidator(satsToRequest, amount -> {
+            checkButton(amount);
+            return testAmountToRequest(amount);
+        });
         addressControl.initOverlay(this, null);
         addressControl.setAppName(app.applicationName());
         addressControl.setOpacity(0.0);
@@ -108,10 +112,6 @@ public class MainController extends MainWindowController {
     @Override
     public void controllerStart(TabPane mainUI, String cssResourceName) {
         this.mainUI = mainUI;
-        // Configure the window with a StackPane so we can overlay things on top of the main UI, and a
-        // NotificationBarPane so we can slide messages and progress bars in from the bottom. Note that
-        // ordering of the construction and connection matters here, otherwise we get (harmless) CSS error
-        // spew to the logs.
         notificationBar = new NotificationBarPane(mainUI);
         // Add CSS that we need. cssResourceName will be loaded from the same package as this class.
         scene.getStylesheets().add(getClass().getResource(cssResourceName).toString());
@@ -127,7 +127,7 @@ public class MainController extends MainWindowController {
         } catch (Exception e) {
             System.out.println(e);
         }
-
+        setLndInvoices();
         addressControl.addressProperty().bind(model.addressProperty());
         balance.textProperty().bind(createBalanceStringBinding(model.balanceProperty()));
         pending.textProperty().bind(createBalanceStringBinding(model.pendingProperty()));
@@ -137,7 +137,8 @@ public class MainController extends MainWindowController {
         } catch (Exception e) {
             System.out.println(e);
         }
-        // Don't let the user click send money when the wallet is empty.
+
+        sendSatsBtn.disableProperty().bind(lndModel.balanceProperty().isEqualTo(0L));
         sendMoneyOutBtn.disableProperty().bind(model.balanceProperty().isEqualTo(Coin.ZERO));
         recentTransactions.recentTransactionsProperty().bind(model.recentTransactionsProperty());
 
@@ -156,28 +157,39 @@ public class MainController extends MainWindowController {
         });
     }
 
-    private static String formatCoin(Coin coin) {
-        return MONETARY_FORMAT.format(coin).toString();
+    private void setLndInvoices() {
+        try {
+            ListInvoiceRequest request = new ListInvoiceRequest();
+            request.setPendingOnly(true);
+            this.app.lndAPI().listInvoices(request, new StreamObserver<>() {
+                @Override
+                public void onNext(ListInvoiceResponse listInvoiceResponse) {
+
+                    Platform.runLater(() -> {
+                        try {
+                            lndModel.invoicesProperty().set(FXCollections.observableArrayList(listInvoiceResponse.getInvoices()));
+                        } catch (Exception e) {
+                            System.out.println(e);
+                        }
+                        invoice.textProperty().bind(createInvoiceStringBindingLnd(lndModel.invoicesProperty()));
+                    });
+                }
+                @Override
+                public void onError(Throwable t) {
+                    System.err.println("Error occurred " + t.getMessage());
+                    t.printStackTrace(System.err);
+                }
+                @Override
+                public void onCompleted() {
+
+                }
+            });
+        } catch (Exception e) {
+            System.out.println(e);
+        }
     }
 
-    private static String formatAmount(Long coin) {
-        return String.valueOf(coin);
-    }
-
-    private static Binding<String> createBalanceStringBinding(ObservableValue<Coin> coinProperty) {
-        return Bindings.createStringBinding(() -> formatCoin(coinProperty.getValue()), coinProperty);
-    }
-
-    private Binding<String> createBalanceStringBindingLnd(ObservableValue<Long> sats) throws ClientSideException {
-        return Bindings.createStringBinding(() -> formatAmount(sats.getValue()), sats);
-    }
-
-    private void showBitcoinSyncMessage() {
-        syncItem = notificationBar.pushItem("Synchronising with the Bitcoin network", model.syncProgressProperty());
-    }
-
-    public void sendMoneyOut(ActionEvent event) throws StatusException, SSLException, ValidationException {
-        // Hide this UI and show the send money UI. This UI won't be clickable until the user dismisses send_money.
+    public void sendMoneyOut(ActionEvent event){
         overlayUI("send_money.fxml");
     }
 
@@ -196,8 +208,6 @@ public class MainController extends MainWindowController {
     }
 
     public void sendSats(ActionEvent actionEvent) {
-
-
         SendRequest sendRequest = new SendRequest();
         sendRequest.setPaymentRequest(paymentRequest.getText());
         try {
@@ -212,16 +222,13 @@ public class MainController extends MainWindowController {
                     }
                     LndModel.updateBalance(0 - value);
                 }
-
                 @Override
                 public void onError(Throwable t) {
                     System.err.println("Error occurred " + t.getMessage());
                     t.printStackTrace(System.err);
                 }
-
                 @Override
                 public void onCompleted() {
-
                 }
             });
         } catch (Exception e) {
@@ -229,24 +236,74 @@ public class MainController extends MainWindowController {
         }
     }
 
+    public void makeInvoice(ActionEvent actionEvent) {
+        Invoice invoiceRequest = new Invoice();
+        invoiceRequest.setValue(Long.valueOf(satsToRequest.getText()));
+        try {
+            this.app.lndAPI().addInvoice(invoiceRequest, new StreamObserver<>() {
+                @Override
+                public void onNext(AddInvoiceResponse addInvoiceResponse) {
+                    Platform.runLater(() -> {
+                        String request = addInvoiceResponse.getPaymentRequest();
+                        Image qrImage = QRCodeImages.imageFromString(request, 390, 310);
+                        invoiceQrCode.setImage(qrImage);
+                    });
+                }
+                @Override
+                public void onError(Throwable t) {
+                    System.err.println("Error occurred " + t.getMessage());
+                    t.printStackTrace(System.err);
+                }
+                @Override
+                public void onCompleted() {}
+            });
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    public void copyInvoice(ActionEvent actionEvent) {
+        Clipboard clipboard = Clipboard.getSystemClipboard();
+        ClipboardContent content = new ClipboardContent();
+        content.putString(invoice.getText());
+        clipboard.setContent(content);
+    }
+
     public void settingsClicked(ActionEvent event) {
         OverlayUI<WalletSettingsController> screen = overlayUI("wallet_settings.fxml");
         screen.controller.initialize(null);
     }
 
+    private static Binding<String> createBalanceStringBinding(ObservableValue<Coin> coinProperty) {
+        return Bindings.createStringBinding(() -> formatCoin(coinProperty.getValue()), coinProperty);
+    }
+
+    private Binding<String> createBalanceStringBindingLnd(ObservableValue<Long> sats) {
+        return Bindings.createStringBinding(() -> formatAmount(sats.getValue()), sats);
+    }
+
+    private Binding<String> createInvoiceStringBindingLnd(ObservableList<Invoice> invoices) {
+        return Bindings.createStringBinding(() -> invoices.get(invoices.size() - 1).getPaymentRequest(), invoices);
+    }
+
+    private void checkButton(String current) {
+        boolean value = testAmountToRequest(current);
+        if(current.isEmpty()) value = false;
+        requestMoneyBtn.setDisable(!value);
+        requestSatsBtn.setDisable(!value);
+    }
+    private boolean testAmountToRequest(String amount) {
+        return amount.isEmpty() || !WTUtils.didThrow(() -> checkState(Long.valueOf(amount) > 0));
+    }
+
     @Override
     public void restoreFromSeedAnimation() {
-        // Buttons slide out ...
         TranslateTransition leave = new TranslateTransition(Duration.millis(1200));
         leave.setByY(80.0);
         leave.play();
     }
 
     public void readyToGoAnimation() {
-        // Buttons slide in and clickable address appears simultaneously.
-//        TranslateTransition arrive = new TranslateTransition(Duration.millis(1200), recentTransactions);
-//        arrive.setInterpolator(new ElasticInterpolator(EasingMode.EASE_OUT, 1, 2));
-//        arrive.setToY(0.0);
         FadeTransition reveal = new FadeTransition(Duration.millis(1200), addressControl);
         reveal.setToValue(1.0);
 
@@ -264,12 +321,15 @@ public class MainController extends MainWindowController {
         return model.getDownloadProgressTracker();
     }
 
-    private void checkButton(String current) {
-        boolean value = testAmountToRequest(current);
-        if(current.isEmpty()) value = false;
-        requestMoneyBtn.setDisable(!value);
+    private void showBitcoinSyncMessage() {
+        syncItem = notificationBar.pushItem("Synchronising with the Bitcoin network", model.syncProgressProperty());
     }
-    private boolean testAmountToRequest(String amount) {
-        return amount.isEmpty() || !WTUtils.didThrow(() -> checkState(Coin.parseCoin(amount).value > 0));
+
+    private static String formatCoin(Coin coin) {
+        return MONETARY_FORMAT.format(coin).toString();
+    }
+
+    private static String formatAmount(Long coin) {
+        return String.valueOf(coin);
     }
 }

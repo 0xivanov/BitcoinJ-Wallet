@@ -100,7 +100,5 @@ public class BitcoinUIModel {
     public SimpleObjectProperty<Coin> pendingProperty() {
         return pending;
     }
-    public SimpleObjectProperty<List<Transaction>> recentTransactionsProperty() {
-        return recentTransactions;
-    }
+    public SimpleObjectProperty<List<Transaction>> recentTransactionsProperty() {return recentTransactions;}
 }
