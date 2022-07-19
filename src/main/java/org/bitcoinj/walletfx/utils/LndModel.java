@@ -5,6 +5,7 @@ import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
 import org.lightningj.lnd.wrapper.*;
 import org.lightningj.lnd.wrapper.message.*;
 
@@ -25,6 +26,31 @@ public class LndModel {
     }
 
     public void setupLnd(AsynchronousLndAPI lndAPI) throws StatusException, ValidationException {
+
+        ListInvoiceRequest request = new ListInvoiceRequest();
+        request.setPendingOnly(true);
+        lndAPI.listInvoices(request, new StreamObserver<>() {
+            @Override
+            public void onNext(ListInvoiceResponse listInvoiceResponse) {
+
+                Platform.runLater(() -> {
+                    try {
+                        lndInvoices.set(FXCollections.observableArrayList(listInvoiceResponse.getInvoices()));
+                    } catch (Exception e) {
+                        System.out.println(e);
+                    }
+                });
+            }
+            @Override
+            public void onError(Throwable t) {
+                System.err.println("Error occurred " + t.getMessage());
+                t.printStackTrace(System.err);
+            }
+            @Override
+            public void onCompleted() {
+
+            }
+        });
         lndAPI.subscribeInvoices(new InvoiceSubscription(), new StreamObserver<>() {
             @Override
             public void onNext(Invoice invoice) {

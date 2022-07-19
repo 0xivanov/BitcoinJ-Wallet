@@ -24,7 +24,6 @@ import javafx.application.Platform;
 import javafx.beans.binding.Binding;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
@@ -53,7 +52,6 @@ import org.lightningj.lnd.wrapper.message.*;
 import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
-import java.util.List;
 
 import static com.google.common.base.Preconditions.checkState;
 
@@ -127,12 +125,13 @@ public class MainController extends MainWindowController {
         } catch (Exception e) {
             System.out.println(e);
         }
-        setLndInvoices();
+
         addressControl.addressProperty().bind(model.addressProperty());
         balance.textProperty().bind(createBalanceStringBinding(model.balanceProperty()));
         pending.textProperty().bind(createBalanceStringBinding(model.pendingProperty()));
 
         try {
+            invoice.textProperty().bind(createInvoiceStringBindingLnd(lndModel.invoicesProperty()));
             lndbalance.textProperty().bind(createBalanceStringBindingLnd(lndModel.balanceProperty()));
         } catch (Exception e) {
             System.out.println(e);
@@ -155,38 +154,6 @@ public class MainController extends MainWindowController {
                 showBitcoinSyncMessage();
             }
         });
-    }
-
-    private void setLndInvoices() {
-        try {
-            ListInvoiceRequest request = new ListInvoiceRequest();
-            request.setPendingOnly(true);
-            this.app.lndAPI().listInvoices(request, new StreamObserver<>() {
-                @Override
-                public void onNext(ListInvoiceResponse listInvoiceResponse) {
-
-                    Platform.runLater(() -> {
-                        try {
-                            lndModel.invoicesProperty().set(FXCollections.observableArrayList(listInvoiceResponse.getInvoices()));
-                        } catch (Exception e) {
-                            System.out.println(e);
-                        }
-                        invoice.textProperty().bind(createInvoiceStringBindingLnd(lndModel.invoicesProperty()));
-                    });
-                }
-                @Override
-                public void onError(Throwable t) {
-                    System.err.println("Error occurred " + t.getMessage());
-                    t.printStackTrace(System.err);
-                }
-                @Override
-                public void onCompleted() {
-
-                }
-            });
-        } catch (Exception e) {
-            System.out.println(e);
-        }
     }
 
     public void sendMoneyOut(ActionEvent event){
@@ -244,9 +211,7 @@ public class MainController extends MainWindowController {
                 @Override
                 public void onNext(AddInvoiceResponse addInvoiceResponse) {
                     Platform.runLater(() -> {
-                        String request = addInvoiceResponse.getPaymentRequest();
-                        Image qrImage = QRCodeImages.imageFromString(request, 390, 310);
-                        invoiceQrCode.setImage(qrImage);
+
                     });
                 }
                 @Override
@@ -283,7 +248,16 @@ public class MainController extends MainWindowController {
     }
 
     private Binding<String> createInvoiceStringBindingLnd(ObservableList<Invoice> invoices) {
-        return Bindings.createStringBinding(() -> invoices.get(invoices.size() - 1).getPaymentRequest(), invoices);
+        return Bindings.createStringBinding(() -> {
+            if(invoices.size() == 0) {
+                invoiceQrCode.setImage(new Image("/org/bitcoinj/walletfx/images/doge.jpg"));
+                return "no invoices available";
+            }
+            String currentInvoice = invoices.get(invoices.size() - 1).getPaymentRequest();
+            Image qrImage = QRCodeImages.imageFromString(currentInvoice, 390, 310);
+            invoiceQrCode.setImage(qrImage);
+            return currentInvoice;
+        }, invoices);
     }
 
     private void checkButton(String current) {
