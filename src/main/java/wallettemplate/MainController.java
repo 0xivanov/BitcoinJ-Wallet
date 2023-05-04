@@ -16,22 +16,18 @@
 
 package wallettemplate;
 
-import io.grpc.stub.StreamObserver;
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
 import javafx.animation.TranslateTransition;
-import javafx.application.Platform;
 import javafx.beans.binding.Binding;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
@@ -46,8 +42,10 @@ import org.bitcoinj.walletfx.application.WalletApplication;
 import org.bitcoinj.walletfx.controls.ClickableBitcoinAddress;
 import org.bitcoinj.walletfx.controls.NotificationBarPane;
 import org.bitcoinj.walletfx.controls.RecentTransactions;
-import org.bitcoinj.walletfx.utils.*;
-import org.lightningj.lnd.wrapper.message.*;
+import org.bitcoinj.walletfx.utils.BitcoinUIModel;
+import org.bitcoinj.walletfx.utils.GuiUtils;
+import org.bitcoinj.walletfx.utils.TextFieldValidator;
+import org.bitcoinj.walletfx.utils.WTUtils;
 
 import java.awt.*;
 import java.io.IOException;
@@ -76,14 +74,10 @@ public class MainController extends MainWindowController {
     protected String uri;
     private NotificationBarPane notificationBar;
 
-    //lightning
-    public LndModel lndModel = new LndModel();
     public Label lndbalance;
     public Label invoice;
     public Button copyInvoice;
     public ImageView invoiceQrCode;
-    public Button sendSatsBtn;
-    public Button requestSatsBtn;
     public TextField paymentRequest;
     public TextField satsToRequest;
     private WalletApplication app;
@@ -121,7 +115,6 @@ public class MainController extends MainWindowController {
     public void onBitcoinSetup() {
         model.setupWallet(this.app.walletAppKit().wallet());
         try {
-            lndModel.setupLnd(this.app.lndAPI());
         } catch (Exception e) {
             System.out.println(e);
         }
@@ -130,14 +123,6 @@ public class MainController extends MainWindowController {
         balance.textProperty().bind(createBalanceStringBinding(model.balanceProperty()));
         pending.textProperty().bind(createBalanceStringBinding(model.pendingProperty()));
 
-        try {
-            invoice.textProperty().bind(createInvoiceStringBindingLnd(lndModel.invoicesProperty()));
-            lndbalance.textProperty().bind(createBalanceStringBindingLnd(lndModel.balanceProperty()));
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-
-        sendSatsBtn.disableProperty().bind(lndModel.balanceProperty().isEqualTo(0L));
         sendMoneyOutBtn.disableProperty().bind(model.balanceProperty().isEqualTo(Coin.ZERO));
         recentTransactions.recentTransactionsProperty().bind(model.recentTransactionsProperty());
 
@@ -174,58 +159,6 @@ public class MainController extends MainWindowController {
         this.overlayUI("request_uri.fxml");
     }
 
-    public void sendSats(ActionEvent actionEvent) {
-        SendRequest sendRequest = new SendRequest();
-        sendRequest.setPaymentRequest(paymentRequest.getText());
-        try {
-            app.lndAPI().sendPaymentSync(sendRequest, new StreamObserver<>() {
-                @Override
-                public void onNext(SendResponse sendResponse) {
-                    Long value = null;
-                    try {
-                        value = sendResponse.getPaymentRoute().getTotalAmt();
-                    } catch (Exception e) {
-                        System.out.println(e);
-                    }
-                    LndModel.updateBalance(0 - value);
-                }
-                @Override
-                public void onError(Throwable t) {
-                    System.err.println("Error occurred " + t.getMessage());
-                    t.printStackTrace(System.err);
-                }
-                @Override
-                public void onCompleted() {
-                }
-            });
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-    }
-
-    public void makeInvoice(ActionEvent actionEvent) {
-        Invoice invoiceRequest = new Invoice();
-        invoiceRequest.setValue(Long.valueOf(satsToRequest.getText()));
-        try {
-            this.app.lndAPI().addInvoice(invoiceRequest, new StreamObserver<>() {
-                @Override
-                public void onNext(AddInvoiceResponse addInvoiceResponse) {
-                    Platform.runLater(() -> {
-
-                    });
-                }
-                @Override
-                public void onError(Throwable t) {
-                    System.err.println("Error occurred " + t.getMessage());
-                    t.printStackTrace(System.err);
-                }
-                @Override
-                public void onCompleted() {}
-            });
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-    }
 
     public void copyInvoice(ActionEvent actionEvent) {
         Clipboard clipboard = Clipboard.getSystemClipboard();
@@ -243,28 +176,10 @@ public class MainController extends MainWindowController {
         return Bindings.createStringBinding(() -> formatCoin(coinProperty.getValue()), coinProperty);
     }
 
-    private Binding<String> createBalanceStringBindingLnd(ObservableValue<Long> sats) {
-        return Bindings.createStringBinding(() -> formatAmount(sats.getValue()), sats);
-    }
-
-    private Binding<String> createInvoiceStringBindingLnd(ObservableList<Invoice> invoices) {
-        return Bindings.createStringBinding(() -> {
-            if(invoices.size() == 0) {
-                invoiceQrCode.setImage(new Image("/org/bitcoinj/walletfx/images/doge.jpg"));
-                return "no invoices available";
-            }
-            String currentInvoice = invoices.get(invoices.size() - 1).getPaymentRequest();
-            Image qrImage = QRCodeImages.imageFromString(currentInvoice, 390, 310);
-            invoiceQrCode.setImage(qrImage);
-            return currentInvoice;
-        }, invoices);
-    }
-
     private void checkButton(String current) {
         boolean value = testAmountToRequest(current);
         if(current.isEmpty()) value = false;
         requestMoneyBtn.setDisable(!value);
-        requestSatsBtn.setDisable(!value);
     }
     private boolean testAmountToRequest(String amount) {
         return amount.isEmpty() || !WTUtils.didThrow(() -> checkState(Long.valueOf(amount) > 0));

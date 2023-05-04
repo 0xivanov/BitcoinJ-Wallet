@@ -18,13 +18,10 @@ package wallettemplate;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.TabPane;
-import javafx.scene.layout.Pane;
 import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.script.Script;
 import org.bitcoinj.walletfx.application.WalletApplication;
-import org.lightningj.lnd.wrapper.ClientSideException;
 
-import javax.net.ssl.SSLException;
 import java.io.IOException;
 import java.net.URL;
 
@@ -33,7 +30,7 @@ import java.net.URL;
  */
 public class WalletTemplate extends WalletApplication {
 
-    public WalletTemplate(String applicationName, NetworkParameters params, Script.ScriptType preferredOutputScriptType) throws ClientSideException, SSLException {
+    public WalletTemplate(String applicationName, NetworkParameters params, Script.ScriptType preferredOutputScriptType) {
         super(applicationName, params, preferredOutputScriptType);
     }
 

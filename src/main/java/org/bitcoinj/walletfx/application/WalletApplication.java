@@ -21,7 +21,6 @@ import javafx.application.Platform;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
 import org.bitcoinj.core.NetworkParameters;
-import org.bitcoinj.core.Utils;
 import org.bitcoinj.kits.WalletAppKit;
 import org.bitcoinj.params.RegTestParams;
 import org.bitcoinj.script.Script;
@@ -30,13 +29,9 @@ import org.bitcoinj.utils.BriefLogFormatter;
 import org.bitcoinj.utils.Threading;
 import org.bitcoinj.wallet.DeterministicSeed;
 import org.bitcoinj.walletfx.utils.GuiUtils;
-import org.lightningj.lnd.wrapper.AsynchronousLndAPI;
-import org.lightningj.lnd.wrapper.ClientSideException;
-import org.lightningj.lnd.wrapper.SynchronousLndAPI;
 import wallettemplate.WalletSetPasswordController;
 
 import javax.annotation.Nullable;
-import javax.net.ssl.SSLException;
 import java.io.File;
 import java.io.IOException;
 
@@ -48,23 +43,18 @@ import static org.bitcoinj.walletfx.utils.GuiUtils.informationalAlert;
 public abstract class WalletApplication implements AppDelegate {
     private static WalletApplication instance;
     private WalletAppKit walletAppKit;
-    private AsynchronousLndAPI lndAPI;
     private final String applicationName;
     private final NetworkParameters params;
     private final Script.ScriptType preferredOutputScriptType;
     private final String walletFileName;
     private MainWindowController controller;
 
-    public WalletApplication(String applicationName, NetworkParameters params, Script.ScriptType preferredOutputScriptType) throws ClientSideException, SSLException {
+    public WalletApplication(String applicationName, NetworkParameters params, Script.ScriptType preferredOutputScriptType) {
         instance = this;
         this.applicationName = applicationName;
         this.walletFileName = applicationName.replaceAll("[^a-zA-Z0-9.-]", "_") + "-" + params.getPaymentProtocolId();
         this.params = params;
         this.preferredOutputScriptType = preferredOutputScriptType;
-
-        File cert =  new File("/home/iivanov/.lnd/tls.cert");
-        File admin =  new File("/home/iivanov/.lnd/data/chain/bitcoin/testnet/admin.macaroon");
-        this.lndAPI = new AsynchronousLndAPI("localhost",10009,cert,admin);
     }
 
     public static WalletApplication instance() {
@@ -74,11 +64,6 @@ public abstract class WalletApplication implements AppDelegate {
     public WalletAppKit walletAppKit() {
         return walletAppKit;
     }
-
-    public AsynchronousLndAPI lndAPI() {
-        return lndAPI;
-    }
-
     public String applicationName() {
         return applicationName;
     }
@@ -114,11 +99,6 @@ public abstract class WalletApplication implements AppDelegate {
         // Make log output concise.
         BriefLogFormatter.init();
 
-        if (Utils.isMac()) {
-            // We could match the Mac Aqua style here, except that (a) Modena doesn't look that bad, and (b)
-            // the date picker widget is kinda broken in AquaFx and I can't be bothered fixing it.
-            // AquaFx.style();
-        }
         controller = loadController();
         primaryStage.setScene(controller.scene());
         primaryStage.setResizable(false);

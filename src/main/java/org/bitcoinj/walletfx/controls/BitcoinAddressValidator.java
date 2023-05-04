@@ -31,7 +31,6 @@ import org.bitcoinj.walletfx.utils.TextFieldValidator;
 public class BitcoinAddressValidator {
     private NetworkParameters params;
     private Node[] nodes;
-
     public BitcoinAddressValidator(NetworkParameters params, TextField field, Node... nodes) {
         this.params = params;
         this.nodes = nodes;

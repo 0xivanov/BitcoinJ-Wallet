@@ -146,8 +146,6 @@
                   </ImageView>
                   <VBox layoutX="29.0" layoutY="252.0" prefHeight="104.0" prefWidth="165.0" spacing="13.0">
                      <children>
-                        <Button fx:id="sendSatsBtn" alignment="CENTER" mnemonicParsing="false" onAction="#sendSats" prefHeight="25.0" prefWidth="150.0" style="-fx-base: lightgreen; -fx-font-weight: bold" styleClass="fat-button" text="Send sats" />
-                        <Button fx:id="requestSatsBtn" alignment="CENTER" mnemonicParsing="false" onAction="#makeInvoice" prefHeight="25.0" prefWidth="148.0" style="-fx-base: #5D3FD3; -fx-font-weight: bold;" styleClass="fat-button" text="Request money" />
                         <Button alignment="CENTER" cancelButton="true" mnemonicParsing="false" onAction="#settingsClicked" prefHeight="25.0" prefWidth="137.0" styleClass="fat-button" text="Settings" />
                      </children>
                   </VBox>
