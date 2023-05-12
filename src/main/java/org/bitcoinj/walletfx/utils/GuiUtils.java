@@ -60,7 +60,6 @@ public class GuiUtils {
         Throwable rootCause = Throwables.getRootCause(t);
         Runnable r = () -> {
             runAlert((stage, controller) -> controller.crashAlert(stage, rootCause.toString()));
-            Platform.exit();
         };
         if (Platform.isFxApplicationThread())
             r.run();

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package wallettemplate;
+package org.bitcoinj.walletfx.common;
 
 import org.bitcoinj.core.Utils;
 import org.bitcoinj.crypto.MnemonicCode;

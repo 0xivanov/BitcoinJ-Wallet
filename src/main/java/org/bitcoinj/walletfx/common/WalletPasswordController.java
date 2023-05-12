@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package wallettemplate;
+package org.bitcoinj.walletfx.common;
 
 import javafx.application.Platform;
 import org.bitcoinj.crypto.KeyCrypterScrypt;

@@ -28,8 +28,9 @@ import org.bitcoinj.utils.AppDataDirectory;
 import org.bitcoinj.utils.BriefLogFormatter;
 import org.bitcoinj.utils.Threading;
 import org.bitcoinj.wallet.DeterministicSeed;
+import org.bitcoinj.walletfx.common.WalletSetPasswordController;
 import org.bitcoinj.walletfx.utils.GuiUtils;
-import wallettemplate.WalletSetPasswordController;
+import org.springframework.context.ConfigurableApplicationContext;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -80,26 +81,26 @@ public abstract class WalletApplication implements AppDelegate {
         return controller;
     }
 
-    protected abstract MainWindowController loadController() throws IOException;
+    protected abstract MainWindowController loadController(ConfigurableApplicationContext springContext) throws IOException;
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage, ConfigurableApplicationContext springContext) throws Exception {
         try {
-            startImpl(primaryStage);
+            startImpl(primaryStage, springContext);
         } catch (Throwable e) {
             GuiUtils.crashAlert(e);
             throw e;
         }
     }
 
-    private void startImpl(Stage primaryStage) throws IOException {
+    private void startImpl(Stage primaryStage, ConfigurableApplicationContext springContext) throws IOException {
         // Show the crash dialog for any exceptions that we don't handle and that hit the main loop.
         GuiUtils.handleCrashesOnThisThread();
 
         // Make log output concise.
         BriefLogFormatter.init();
 
-        controller = loadController();
+        controller = loadController(springContext);
         primaryStage.setScene(controller.scene());
         primaryStage.setResizable(false);
         startWalletAppKit(primaryStage);
@@ -144,6 +145,7 @@ public abstract class WalletApplication implements AppDelegate {
                 Platform.runLater(controller::onBitcoinSetup);
             }
         };
+
         // Now configure and start the appkit. This will take a second or two - we could show a temporary splash screen
         // or progress widget to keep the user engaged whilst we initialise, but we don't.
         if (params == RegTestParams.get()) {

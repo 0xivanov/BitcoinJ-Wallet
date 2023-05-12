@@ -1,4 +1,4 @@
-package wallettemplate;
+package org.bitcoinj.walletfx.common;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

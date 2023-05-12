@@ -18,6 +18,7 @@ package org.bitcoinj.walletfx.application;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
+import org.springframework.context.ConfigurableApplicationContext;
 
 /**
  * A delegate that implements JavaFX {@link Application}
@@ -31,6 +32,6 @@ public interface AppDelegate {
      */
     default void init(Application application) throws Exception {
     }
-    void start(Stage primaryStage) throws Exception;
+    void start(Stage primaryStage, ConfigurableApplicationContext springContext) throws Exception;
     void stop() throws Exception;
 }

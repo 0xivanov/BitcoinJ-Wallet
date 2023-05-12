@@ -19,7 +19,7 @@
 
 <?import org.bitcoinj.walletfx.controls.RecentTransactions?>
 <?import org.bitcoinj.walletfx.controls.ClickableBitcoinAddress?>
-<TabPane minHeight="200.0" minWidth="300.0" prefHeight="451.0" prefWidth="900.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="wallettemplate.MainController">
+<TabPane minHeight="200.0" minWidth="300.0" prefHeight="451.0" prefWidth="900.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.bitcoinj.walletfx.common.MainController">
   <tabs>
     <Tab text="Bitcoin Network">
          <content>
@@ -82,7 +82,7 @@
                         </ColorAdjust>
                      </effect>
                      <image>
-                        <Image url="@../org/bitcoinj/walletfx/images/bitcoin_logo_plain.png" />
+                        <Image url="@../images/bitcoin_logo_plain.png" />
                      </image>
                   </ImageView>
                   <ClickableBitcoinAddress fx:id="addressControl" prefHeight="21.0" prefWidth="391.0" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="202.0" />
@@ -97,71 +97,6 @@
                      </children>
                   </VBox>
                   <TextField fx:id="btcToRequest" layoutX="206.0" layoutY="304.0" prefHeight="25.0" prefWidth="105.0" promptText="btc" />
-               </children>
-            </AnchorPane>
-         </content>
-    </Tab>
-    <Tab text="Lightning Network">
-         <content>
-            <AnchorPane maxHeight="Infinity" maxWidth="Infinity" minHeight="200.0" minWidth="300.0" prefHeight="451.0" prefWidth="800.0" styleClass="root-pane">
-               <children>
-                  <Label layoutX="31.0" layoutY="38.0" prefHeight="45.0" prefWidth="164.0" text="Balances">
-                     <font>
-                        <Font name="System Bold" size="30.0" fx:id="x11" />
-                     </font>
-                  </Label>
-                  <HBox alignment="CENTER_LEFT" layoutX="29.0" layoutY="89.0" prefHeight="45.0" prefWidth="317.0" AnchorPane.leftAnchor="29.0" AnchorPane.rightAnchor="454.0" AnchorPane.topAnchor="89.0">
-                     <children>
-                        <Label text="Available:">
-                           <font>
-                              <Font size="18.0" />
-                           </font>
-                           <padding>
-                              <Insets right="10.0" />
-                           </padding>
-                        </Label>
-                        <Label fx:id="lndbalance" text="0.00" textFill="#5d3fd3" underline="false">
-                           <font>
-                              <Font size="18.0" />
-                           </font>
-                        </Label>
-                        <Label text="SATS">
-                           <font>
-                              <Font name="System Bold" size="18.0" />
-                           </font>
-                        </Label>
-                     </children>
-                  </HBox>
-                  <ImageView fitHeight="243.0" fitWidth="243.0" opacity="0.28" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="-36.0" AnchorPane.rightAnchor="-34.0">
-                     <effect>
-                        <ColorAdjust>
-                           <input>
-                              <BoxBlur height="20.0" width="20.0" />
-                           </input>
-                        </ColorAdjust>
-                     </effect>
-                     <image>
-                        <Image url="@../org/bitcoinj/walletfx/images/lightning_logo.png" />
-                     </image>
-                  </ImageView>
-                  <VBox layoutX="29.0" layoutY="252.0" prefHeight="104.0" prefWidth="165.0" spacing="13.0">
-                     <children>
-                        <Button alignment="CENTER" cancelButton="true" mnemonicParsing="false" onAction="#settingsClicked" prefHeight="25.0" prefWidth="137.0" styleClass="fat-button" text="Settings" />
-                     </children>
-                  </VBox>
-                  <TextField fx:id="satsToRequest" layoutX="206.0" layoutY="304.0" prefHeight="25.0" prefWidth="105.0" promptText="sats" />
-                  <TextField fx:id="paymentRequest" layoutX="31.0" layoutY="201.0" prefHeight="25.0" prefWidth="248.0" promptText="payment request" />
-                  <VBox alignment="CENTER" layoutX="373.0" prefHeight="328.0" prefWidth="428.0" spacing="20.0" style="-fx-background-color: transparent;">
-                     <children>
-                        <ImageView fx:id="invoiceQrCode" fitHeight="247.0" fitWidth="289.0" layoutX="63.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
-                           <cursor>
-                              <Cursor fx:constant="DEFAULT" />
-                           </cursor>
-                        </ImageView>
-                        <Label fx:id="invoice" layoutX="18.0" layoutY="205.0" prefHeight="25.0" prefWidth="336.0" text="invoice" />
-                        <Button fx:id="copyInvoice" cancelButton="true" layoutX="63.0" layoutY="242.0" mnemonicParsing="false" onAction="#copyInvoice" prefWidth="79.0" text="Copy" />
-                     </children>
-                  </VBox>
                </children>
             </AnchorPane>
          </content>

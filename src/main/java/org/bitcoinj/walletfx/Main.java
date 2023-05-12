@@ -22,9 +22,10 @@ import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.params.TestNet3Params;
 import org.bitcoinj.script.Script;
 import org.bitcoinj.walletfx.application.AppDelegate;
+import org.bitcoinj.walletfx.common.WalletTemplate;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import wallettemplate.WalletTemplate;
+import org.springframework.context.ConfigurableApplicationContext;
 
 /**
  * Proxy JavaFX {@link Application} that delegates all functionality
@@ -32,29 +33,28 @@ import wallettemplate.WalletTemplate;
  */
 @SpringBootApplication
 public class Main extends Application {
+
+    private ConfigurableApplicationContext springContext;
     private static final NetworkParameters params = TestNet3Params.get();
     private static final Script.ScriptType PREFERRED_OUTPUT_SCRIPT_TYPE = Script.ScriptType.P2WPKH;
     private static final String APP_NAME = "Bitcoin Wallet";
 
-    private final AppDelegate delegate;
+    private AppDelegate delegate;
 
     public static void main(String[] args) {
-        SpringApplication.run(Main.class, args);
         launch(args);
-    }
-
-    public Main() {
-        delegate = new WalletTemplate(APP_NAME, params, PREFERRED_OUTPUT_SCRIPT_TYPE);
     }
 
     @Override
     public void init() throws Exception {
+        delegate = new WalletTemplate(APP_NAME, params, PREFERRED_OUTPUT_SCRIPT_TYPE);
         delegate.init(this);
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        delegate.start(primaryStage);
+        springContext = SpringApplication.run(Main.class);
+        delegate.start(primaryStage, springContext);
     }
 
     @Override

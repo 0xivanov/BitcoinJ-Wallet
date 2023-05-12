@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package wallettemplate;
+package org.bitcoinj.walletfx.common;
 
 import javafx.scene.layout.HBox;
 import org.bitcoinj.core.*;
@@ -93,10 +93,12 @@ public class SendMoneyController implements OverlayController<SendMoneyControlle
             // Don't make the user wait for confirmations for now, as the intention is they're sending it
             // their own money!
             req.allowUnconfirmed();
+            req.feePerKb = Transaction.REFERENCE_DEFAULT_MIN_TX_FEE;
             sendResult = app.walletAppKit().wallet().sendCoins(req);
             Futures.addCallback(sendResult.broadcastComplete, new FutureCallback<>() {
                 @Override
                 public void onSuccess(@Nullable Transaction result) {
+                    System.out.println("sent transaction");
                     checkGuiThread();
                     overlayUI.done();
                 }
@@ -104,7 +106,6 @@ public class SendMoneyController implements OverlayController<SendMoneyControlle
                 @Override
                 public void onFailure(Throwable t) {
                     // We died trying to empty the wallet.
-                    crashAlert(t);
                 }
             }, MoreExecutors.directExecutor());
             sendResult.tx.getConfidence().addEventListener((tx, reason) -> {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package wallettemplate;
+package org.bitcoinj.walletfx.common;
 
 import com.google.protobuf.ByteString;
 import javafx.event.ActionEvent;

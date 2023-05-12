@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package wallettemplate;
+package org.bitcoinj.walletfx.common;
 
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
@@ -42,10 +42,14 @@ import org.bitcoinj.walletfx.application.WalletApplication;
 import org.bitcoinj.walletfx.controls.ClickableBitcoinAddress;
 import org.bitcoinj.walletfx.controls.NotificationBarPane;
 import org.bitcoinj.walletfx.controls.RecentTransactions;
+import org.bitcoinj.walletfx.repository.AccountRepository;
+import org.bitcoinj.walletfx.repository.TransactionRepository;
 import org.bitcoinj.walletfx.utils.BitcoinUIModel;
 import org.bitcoinj.walletfx.utils.GuiUtils;
 import org.bitcoinj.walletfx.utils.TextFieldValidator;
 import org.bitcoinj.walletfx.utils.WTUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.awt.*;
 import java.io.IOException;
@@ -57,11 +61,11 @@ import static com.google.common.base.Preconditions.checkState;
  * Gets created auto-magically by FXMLLoader via reflection. The widget fields are set to the GUI controls they're named
  * after. This class handles all the updates and event handling for the main UI.
  */
+@Component
 public class MainController extends MainWindowController {
 
 
     // bitcoin
-    private final BitcoinUIModel model = new BitcoinUIModel();
     public Label balance;
     public Label pending;
     public Button sendMoneyOutBtn;
@@ -69,28 +73,24 @@ public class MainController extends MainWindowController {
     public TextField btcToRequest;
     public ClickableBitcoinAddress addressControl;
     public RecentTransactions recentTransactions;
+    @Autowired
+    private TransactionRepository transactionRepository;
+    @Autowired
+    private AccountRepository accountRepository;
     private NotificationBarPane.Item syncItem;
     private static final MonetaryFormat MONETARY_FORMAT = MonetaryFormat.BTC.noCode();
     protected String uri;
     private NotificationBarPane notificationBar;
 
-    public Label lndbalance;
-    public Label invoice;
-    public Button copyInvoice;
-    public ImageView invoiceQrCode;
-    public TextField paymentRequest;
-    public TextField satsToRequest;
+    private BitcoinUIModel model ;
     private WalletApplication app;
 
     public void initialize() {
+        this.model = new BitcoinUIModel(transactionRepository, accountRepository);
         app = WalletApplication.instance();
         scene = new Scene(uiStack);
         TextFieldValidator.configureScene(scene);
         new TextFieldValidator(btcToRequest, amount -> {
-            checkButton(amount);
-            return testAmountToRequest(amount);
-        });
-        new TextFieldValidator(satsToRequest, amount -> {
             checkButton(amount);
             return testAmountToRequest(amount);
         });
@@ -163,7 +163,6 @@ public class MainController extends MainWindowController {
     public void copyInvoice(ActionEvent actionEvent) {
         Clipboard clipboard = Clipboard.getSystemClipboard();
         ClipboardContent content = new ClipboardContent();
-        content.putString(invoice.getText());
         clipboard.setContent(content);
     }
 

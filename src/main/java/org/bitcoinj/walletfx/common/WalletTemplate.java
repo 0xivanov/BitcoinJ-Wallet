@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package wallettemplate;
+package org.bitcoinj.walletfx.common;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.TabPane;
 import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.script.Script;
 import org.bitcoinj.walletfx.application.WalletApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 
 import java.io.IOException;
 import java.net.URL;
@@ -35,10 +36,11 @@ public class WalletTemplate extends WalletApplication {
     }
 
     @Override
-    protected MainController loadController() throws IOException {
+    protected MainController loadController(ConfigurableApplicationContext springContext) throws IOException {
         // Load the GUI. The MainController class will be automagically created and wired up.
         URL location = getClass().getResource("main.fxml");
         FXMLLoader loader = new FXMLLoader(location);
+        loader.setControllerFactory(springContext::getBean);
         TabPane mainUI = loader.load();
         MainController controller = loader.getController();
 
