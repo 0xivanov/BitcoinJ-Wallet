@@ -19,7 +19,7 @@
 
 <?import org.bitcoinj.walletfx.controls.RecentTransactions?>
 <?import org.bitcoinj.walletfx.controls.ClickableBitcoinAddress?>
-<TabPane minHeight="200.0" minWidth="300.0" prefHeight="451.0" prefWidth="900.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.bitcoinj.walletfx.common.MainController">
+<TabPane minHeight="200.0" minWidth="300.0" prefHeight="451.0" prefWidth="950.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.bitcoinj.walletfx.common.MainController">
   <tabs>
     <Tab text="Bitcoin Network">
          <content>
@@ -87,7 +87,7 @@
                   </ImageView>
                   <ClickableBitcoinAddress fx:id="addressControl" prefHeight="21.0" prefWidth="391.0" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="202.0" />
                   <HBox layoutX="44.0" layoutY="343.0" prefHeight="25.0" prefWidth="333.0" spacing="20" AnchorPane.rightAnchor="423.0" AnchorPane.topAnchor="343.0" />
-                  <RecentTransactions fx:id="recentTransactions" layoutX="400.0" layoutY="26.0">
+                  <RecentTransactions fx:id="recentTransactions" layoutX="350.0" layoutY="26.0">
                   </RecentTransactions>
                   <VBox layoutX="29.0" layoutY="252.0" prefHeight="104.0" prefWidth="165.0" spacing="13.0">
                      <children>

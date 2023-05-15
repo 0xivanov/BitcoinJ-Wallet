@@ -54,6 +54,7 @@ public class BitcoinUIModel {
     private SimpleObjectProperty<Coin> pending = new SimpleObjectProperty<>(Coin.ZERO);
     private SimpleObjectProperty<List<Transaction>> recentTransactions = new SimpleObjectProperty<>();
     private SimpleDoubleProperty syncProgress = new SimpleDoubleProperty(-1);
+    private List<String> deletedTransactionsHashes = new ArrayList<>();
 
     private ProgressBarUpdater syncProgressUpdater = new ProgressBarUpdater();
 
@@ -66,18 +67,19 @@ public class BitcoinUIModel {
     public final void setupWallet(Wallet wallet) {
         wallet.addChangeEventListener(w -> {
             updateBalance(w);
-            updateRecentTransactions(w);
+            updateRecentTransactions(w, null);
         });
         wallet.addCurrentKeyChangeEventListener(Platform::runLater, () -> updateAddress(wallet));
         updateBalance(wallet);
         updateAddress(wallet);
-        updateRecentTransactions(wallet);
+        updateRecentTransactions(wallet, null);
     }
 
-    private void updateRecentTransactions(Wallet wallet) {
+    public void updateRecentTransactions(Wallet wallet, String deletedHash) {
+        if(deletedHash != null) deletedTransactionsHashes.add(deletedHash);
         List<Transaction> transactions = new ArrayList<>();
         for (org.bitcoinj.core.Transaction tr : wallet.getRecentTransactions(4, false)) {
-            if (transactionRepository.existsTransactionByTransactionHash(tr.getHashAsString())) continue;
+            if (transactionRepository.existsTransactionByTransactionHash(tr.getHashAsString()) || deletedTransactionsHashes.contains(deletedHash)) continue;
             Transaction domainTr = new Transaction();
             domainTr.setAmount(tr.getValue(wallet));
             domainTr.setTimestamp(tr.getUpdateTime());
@@ -148,7 +150,7 @@ public class BitcoinUIModel {
                 HttpGet request = new HttpGet("https://api.blockcypher.com/v1/btc/test3/txs/" + tr.getTransactionHash());
                 request.addHeader("content-type", "application/json");
                 CloseableHttpResponse result = httpClient.execute(request);
-                if(result.getStatusLine().getStatusCode() != 200) return;
+                if (result.getStatusLine().getStatusCode() != 200) return;
                 String json = EntityUtils.toString(result.getEntity(), "UTF-8");
                 model = new Gson().fromJson(json, TransactionModel.class);
 

@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
     boolean existsTransactionByTransactionHash(String hash);
+    Transaction findTransactionByTransactionHash(String hash);
+    void deleteTransactionByTransactionHash(String hash);
 }

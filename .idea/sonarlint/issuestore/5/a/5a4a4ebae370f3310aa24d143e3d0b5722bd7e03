@@ -1,0 +1,11 @@
+
+j
+java:S1104"TMake uriLabel a static final constant or non-public and provide accessors if needed.(µ´¸
+p
+java:S1104"UMake imageView a static final constant or non-public and provide accessors if needed.(…Çªúÿÿÿÿ
+œ
+java:S1186#"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(·òşÿÿÿÿ
+x
+java:S1450"]Remove the "rootController" field and declare it as a local variable in the relevant methods.(Õ©Ùûÿÿÿÿÿ
+G
+java:S1172.",Remove this unused method parameter "event".(˜³¢£úÿÿÿÿ

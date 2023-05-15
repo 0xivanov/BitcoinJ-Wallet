@@ -1,0 +1,8 @@
+
+[	java:S112N"FDefine and throw a dedicated exception instead of using a generic one.(ë›Ø
+q
+java:S1104T"VMake controller a static final constant or non-public and provide accessors if needed.(ÇæÔÜúÿÿÿÿ
+Q	java:S125a"<This block of commented-out lines of code should be removed.(ÎÚÚé
+K
+java:S1611r"0Remove the parentheses around the "ev" parameter(ĞÃñÉúÿÿÿÿ
+Q	java:S125{"<This block of commented-out lines of code should be removed.(â…³

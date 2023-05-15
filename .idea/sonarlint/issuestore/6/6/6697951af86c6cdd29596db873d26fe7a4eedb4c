@@ -1,0 +1,29 @@
+
+p
+java:S1104C"SMake balance a static final constant or non-public and provide accessors if needed.(†ˆ†È8’ÈòÚ1
+p
+java:S1104D"SMake pending a static final constant or non-public and provide accessors if needed.(ÃĞ­¹8“ÈòÚ1
+}
+java:S1104E"[Make sendMoneyOutBtn a static final constant or non-public and provide accessors if needed.(¨åğ»ûÿÿÿÿ8“ÈòÚ1
+}
+java:S1104F"[Make requestMoneyBtn a static final constant or non-public and provide accessors if needed.(ä°åúÿÿÿÿ8“ÈòÚ1
+u
+java:S1104G"XMake btcToRequest a static final constant or non-public and provide accessors if needed.(€Şä8“ÈòÚ1
+|
+java:S1104H"ZMake addressControl a static final constant or non-public and provide accessors if needed.(ù…¤üÿÿÿÿ8“ÈòÚ1
+{
+java:S1104I"^Make recentTransactions a static final constant or non-public and provide accessors if needed.(ê¶ÚĞ8“ÈòÚ1
+n
+java:S1104S"QMake model a static final constant or non-public and provide accessors if needed.(àëÍ¿8©²±Û1
+J	java:S108s")Either remove or fill this block of code.(¡»¢üùÿÿÿÿ8‚ÉòÚ1
+Z	java:S106u"9Replace this use of System.out or System.err by a logger.(¨¶ÑÍşÿÿÿÿ8ƒÉòÚ1
+O
+java:S1172",Remove this unused method parameter "event".(¢áÂœøÿÿÿÿ8…ÉòÚ1
+O
+java:S1172’",Remove this unused method parameter "event".(…°‹üûÿÿÿÿ8†ÉòÚ1
+O
+java:S1172 ",Remove this unused method parameter "event".(‡¬åùÿÿÿÿ8²‡ôÚ1
+b
+java:S1128*"ERemove this unused import 'org.bitcoinj.walletfx.domain.Transaction'.(¾™›¨8ï½£Û1
+T
+java:S1144Ó"1Remove this unused private "formatAmount" method.(–·Ó‹üÿÿÿÿ8¶‡ôÚ1

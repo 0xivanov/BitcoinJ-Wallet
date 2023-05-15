@@ -1,0 +1,18 @@
+
+u
+java:S1104."SMake sendBtn a static final constant or non-public and provide accessors if needed.(Ÿ„’úüÿÿÿÿ8‡‹»ÿ€1
+r
+java:S1104/"UMake cancelBtn a static final constant or non-public and provide accessors if needed.(»’’é8‡‹»ÿ€1
+p
+java:S11040"SMake address a static final constant or non-public and provide accessors if needed.(‹¥—8‡‹»ÿ€1
+x
+java:S11041"VMake titleLabel a static final constant or non-public and provide accessors if needed.(í˜Öîùÿÿÿÿ8‡‹»ÿ€1
+s
+java:S11042"VMake amountEdit a static final constant or non-public and provide accessors if needed.(õŞ¾¾8‡‹»ÿ€1
+v
+java:S11043"TMake btcLabel a static final constant or non-public and provide accessors if needed.(»×™úÿÿÿÿ8‡‹»ÿ€1
+N
+java:S1172N",Remove this unused method parameter "event".(˜³¢£úÿÿÿÿ8¤‹»ÿ€1
+N
+java:S1172R",Remove this unused method parameter "event".(±ì·êøÿÿÿÿ8¥‹»ÿ€1
+Z	java:S106e"9Replace this use of System.out or System.err by a logger.(²‘­ùÿÿÿÿ8§‹»ÿ€1

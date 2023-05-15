@@ -28,9 +28,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.Clipboard;
-import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyCombination;
 import javafx.util.Duration;
 import org.bitcoinj.core.Coin;
@@ -42,6 +39,7 @@ import org.bitcoinj.walletfx.application.WalletApplication;
 import org.bitcoinj.walletfx.controls.ClickableBitcoinAddress;
 import org.bitcoinj.walletfx.controls.NotificationBarPane;
 import org.bitcoinj.walletfx.controls.RecentTransactions;
+import org.bitcoinj.walletfx.domain.Transaction;
 import org.bitcoinj.walletfx.repository.AccountRepository;
 import org.bitcoinj.walletfx.repository.TransactionRepository;
 import org.bitcoinj.walletfx.utils.BitcoinUIModel;
@@ -74,15 +72,15 @@ public class MainController extends MainWindowController {
     public ClickableBitcoinAddress addressControl;
     public RecentTransactions recentTransactions;
     @Autowired
-    private TransactionRepository transactionRepository;
+    public TransactionRepository transactionRepository;
     @Autowired
-    private AccountRepository accountRepository;
+    public AccountRepository accountRepository;
     private NotificationBarPane.Item syncItem;
     private static final MonetaryFormat MONETARY_FORMAT = MonetaryFormat.BTC.noCode();
     protected String uri;
     private NotificationBarPane notificationBar;
 
-    private BitcoinUIModel model ;
+    public BitcoinUIModel model ;
     private WalletApplication app;
 
     public void initialize() {
@@ -157,13 +155,6 @@ public class MainController extends MainWindowController {
             GuiUtils.informationalAlert("Does not work on linux", "Perhaps you don't have one installed?");
         }
         this.overlayUI("request_uri.fxml");
-    }
-
-
-    public void copyInvoice(ActionEvent actionEvent) {
-        Clipboard clipboard = Clipboard.getSystemClipboard();
-        ClipboardContent content = new ClipboardContent();
-        clipboard.setContent(content);
     }
 
     public void settingsClicked(ActionEvent event) {

@@ -1,16 +1,22 @@
 package org.bitcoinj.walletfx.controls;
 
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.walletfx.application.WalletApplication;
+import org.bitcoinj.walletfx.common.MainController;
 import org.bitcoinj.walletfx.domain.Transaction;
 import org.bitcoinj.walletfx.overlay.OverlayController;
 import org.bitcoinj.walletfx.overlay.OverlayableStackPaneController;
@@ -20,7 +26,7 @@ import java.util.List;
 
 public class RecentTransactions extends AnchorPane implements OverlayController<ClickableBitcoinAddress> {
 
-    private SimpleObjectProperty<List<Transaction>> recentTransactions = new SimpleObjectProperty<>();
+    public SimpleObjectProperty<List<Transaction>> recentTransactions = new SimpleObjectProperty<>();
     private WalletApplication app;
     @FXML
     protected HBox transaction1;
@@ -30,11 +36,12 @@ public class RecentTransactions extends AnchorPane implements OverlayController<
     protected HBox transaction3;
     @FXML
     protected HBox transaction4;
-
+    MainController mainController;
 
     public RecentTransactions() {
         try {
             app = WalletApplication.instance();
+            mainController = (MainController) app.mainWindowController();
             FXMLLoader loader = new FXMLLoader(getClass().getResource("recent_transactions.fxml"));
             loader.setRoot(this);
             loader.setController(this);
@@ -47,6 +54,7 @@ public class RecentTransactions extends AnchorPane implements OverlayController<
 
     @Override
     public void initOverlay(OverlayableStackPaneController rootController, OverlayableStackPaneController.OverlayUI<? extends OverlayController<ClickableBitcoinAddress>> ui) {
+        mainController = (MainController) app.mainWindowController();
         recentTransactions.addListener((observableValue, transactions, t1) -> updateTransactions());
         updateTransactions();
     }
@@ -74,7 +82,8 @@ public class RecentTransactions extends AnchorPane implements OverlayController<
         Label date = (Label) vBox.getChildren().get(0);
         date.setText(tr.getTimestamp().toLocaleString());
 
-        Label address = (Label) vBox.getChildren().get(1);
+        HBox hbox1 = (HBox) vBox.getChildren().get(1);
+        Label address = (Label) hbox1.getChildren().get(0);
         address.setText(tr.getAddress().getAddress());
 
         Coin value = tr.getAmount();
@@ -90,7 +99,50 @@ public class RecentTransactions extends AnchorPane implements OverlayController<
             amount.setStyle("-fx-text-fill: red;-fx-font-size: 13pt;");
         }
     }
-
+    public void delete1() {
+        String deletedHash = recentTransactions.get().get(0).getTransactionHash();
+        mainController.transactionRepository.delete(mainController.transactionRepository.findTransactionByTransactionHash(deletedHash));
+        mainController.model.updateRecentTransactions(app.walletAppKit().wallet(), deletedHash);
+    }
+    public void delete2() {
+        String deletedHash = recentTransactions.get().get(1).getTransactionHash();
+        mainController.transactionRepository.delete(mainController.transactionRepository.findTransactionByTransactionHash(deletedHash));
+        mainController.model.updateRecentTransactions(app.walletAppKit().wallet(), deletedHash);
+    }
+    public void delete3() {
+        String deletedHash = recentTransactions.get().get(2).getTransactionHash();
+        mainController.transactionRepository.delete(mainController.transactionRepository.findTransactionByTransactionHash(deletedHash));
+        mainController.model.updateRecentTransactions(app.walletAppKit().wallet(), deletedHash);
+    }
+    public void delete4() {
+        String deletedHash = recentTransactions.get().get(3).getTransactionHash();
+        mainController.transactionRepository.delete(mainController.transactionRepository.findTransactionByTransactionHash(deletedHash));
+        mainController.model.updateRecentTransactions(app.walletAppKit().wallet(), deletedHash);
+    }
+    public void copy1() {
+        Clipboard clipboard = Clipboard.getSystemClipboard();
+        ClipboardContent content = new ClipboardContent();
+        content.putString(recentTransactions.get().get(0).getAddress().getAddress());
+        clipboard.setContent(content);
+    }
+    public void copy2() {
+        Clipboard clipboard = Clipboard.getSystemClipboard();
+        ClipboardContent content = new ClipboardContent();
+        content.putString(recentTransactions.get().get(1).getAddress().getAddress());
+        clipboard.setContent(content);
+    }
+    public void copy3() {
+        Clipboard clipboard = Clipboard.getSystemClipboard();
+        ClipboardContent content = new ClipboardContent();
+        content.putString(recentTransactions.get().get(2).getAddress().getAddress());
+        clipboard.setContent(content);
+    }
+    public void copy4() {
+        Clipboard clipboard = Clipboard.getSystemClipboard();
+        ClipboardContent content = new ClipboardContent();
+        content.putString(recentTransactions.get().get(3).getAddress().getAddress());
+        clipboard.setContent(content);
+    }
     public SimpleObjectProperty<List<Transaction>> recentTransactionsProperty() {
         return recentTransactions;
     }
